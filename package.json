@@ -26,6 +26,14 @@
     "directories": {
       "output": "dist"
     },
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "simonnthebest07-tech",
+        "repo": "ascend-journal",
+        "releaseType": "release"
+      }
+    ],
     "files": [
       "**/*",
       "!dist/**/*"
