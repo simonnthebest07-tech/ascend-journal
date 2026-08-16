@@ -1,0 +1,19 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+build/
+
+# Electron / OS generated files
+*.log
+.DS_Store
+Thumbs.db
+
+# Environment files
+.env
+.env.*
+
+# Editor files
+.vscode/
+.idea/

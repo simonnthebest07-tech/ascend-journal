@@ -1,0 +1,42 @@
+{
+  "name": "ascend-journal",
+  "productName": "ASCEND Journal",
+  "version": "1.0.1",
+  "description": "ASCEND Trading Journal",
+  "main": "electron/main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder --win"
+  },
+  "keywords": [],
+  "author": "Simon",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "electron": "^43.4.0",
+    "electron-builder": "^26.15.3"
+  },
+  "dependencies": {
+    "electron-updater": "^6.8.9",
+    "electron-window-state": "^5.0.3"
+  },
+  "build": {
+    "appId": "com.ascend.journal",
+    "productName": "ASCEND Journal",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "**/*",
+      "!dist/**/*"
+    ],
+    "win": {
+      "target": "nsis"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true
+    }
+  }
+}
