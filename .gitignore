@@ -4,6 +4,10 @@ node_modules/
 # Build output
 dist/
 build/
+# Keep only the source-controlled ASCEND desktop icon assets in the build folder.
+!build/
+!build/icon.png
+!build/icon.ico
 
 # Electron / OS generated files
 *.log

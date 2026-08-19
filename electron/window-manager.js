@@ -1,983 +1,180 @@
-const {
-    BrowserWindow,
-    screen
-} = require('electron');
+'use strict';
 
-const path = require('path');
+const { BrowserWindow, screen, shell } = require('electron');
 const windowStateKeeper = require('electron-window-state');
-
-class WindowManager {
-
-    constructor() {
-
-        this.window = null;
-        this.windowState = null;
-
-        // Minimum window dimensions
-        this.MIN_WIDTH = 1100;
-        this.MIN_HEIGHT = 700;
-
-        // Display event handlers
-        this.handleDisplayRemoved =
-            this.handleDisplayRemoved.bind(this);
-
-        this.handleDisplayMetricsChanged =
-            this.handleDisplayMetricsChanged.bind(this);
-
-        this.displayListenersRegistered = false;
-    }
-
-
-    // =========================================================
-    // CREATE WINDOW
-    // =========================================================
-
-    create() {
-
-        // Prevent duplicate windows
-        if (
-            this.window &&
-            !this.window.isDestroyed()
-        ) {
-            return this.window;
-        }
-
-
-        // =====================================================
-        // WINDOW STATE
-        // =====================================================
-
-        this.windowState = windowStateKeeper({
-
-            defaultWidth: 1440,
-            defaultHeight: 900
-
-        });
-
-
-        const width = Math.max(
-            this.MIN_WIDTH,
-            this.windowState.width
-        );
-
-
-        const height = Math.max(
-            this.MIN_HEIGHT,
-            this.windowState.height
-        );
-
-
-        // =====================================================
-        // VALIDATE SAVED POSITION
-        // =====================================================
-
-        const position =
-            this.validateWindowPosition(
-                this.windowState.x,
-                this.windowState.y,
-                width,
-                height
-            );
-
-
-        // =====================================================
-        // CREATE BROWSER WINDOW
-        // =====================================================
-
-        this.window = new BrowserWindow({
-
-            x: position.x,
-            y: position.y,
-
-            width,
-            height,
-
-            minWidth: this.MIN_WIDTH,
-            minHeight: this.MIN_HEIGHT,
-
-            frame: false,
-
-            backgroundColor: '#050608',
-
-            show: false,
-
-            webPreferences: {
-
-                preload: path.join(
-                    __dirname,
-                    'preload.js'
-                ),
-
-                contextIsolation: true,
-
-                nodeIntegration: false,
-
-                sandbox: true
-            }
-        });
-
-
-        // =====================================================
-        // WINDOW STATE KEEPER
-        // =====================================================
-
-        this.windowState.manage(
-            this.window
-        );
-
-
-        // =====================================================
-        // DISPLAY MONITORING
-        // =====================================================
-
-        this.registerDisplayListeners();
-
-
-        // =====================================================
-        // READY TO SHOW
-        // =====================================================
-
-        this.window.once(
-            'ready-to-show',
-            () => {
-
-                if (
-                    !this.window ||
-                    this.window.isDestroyed()
-                ) {
-                    return;
-                }
-
-                this.ensureWindowVisible();
-
-                this.window.show();
-
-            }
-        );
-
-
-        // =====================================================
-        // MAXIMIZE
-        // =====================================================
-
-        this.window.on(
-            'maximize',
-            () => {
-
-                if (
-                    !this.window ||
-                    this.window.isDestroyed()
-                ) {
-                    return;
-                }
-
-                this.window.webContents.send(
-                    'window-maximized',
-                    true
-                );
-
-            }
-        );
-
-
-        // =====================================================
-        // UNMAXIMIZE
-        // =====================================================
-
-        this.window.on(
-            'unmaximize',
-            () => {
-
-                if (
-                    !this.window ||
-                    this.window.isDestroyed()
-                ) {
-                    return;
-                }
-
-                this.window.webContents.send(
-                    'window-maximized',
-                    false
-                );
-
-            }
-        );
-
-
-        // =====================================================
-        // FULLSCREEN
-        // =====================================================
-
-        this.window.on(
-            'enter-full-screen',
-            () => {
-
-                if (
-                    !this.window ||
-                    this.window.isDestroyed()
-                ) {
-                    return;
-                }
-
-                this.window.webContents.send(
-                    'window-fullscreen',
-                    true
-                );
-
-            }
-        );
-
-
-        this.window.on(
-            'leave-full-screen',
-            () => {
-
-                if (
-                    !this.window ||
-                    this.window.isDestroyed()
-                ) {
-                    return;
-                }
-
-                this.window.webContents.send(
-                    'window-fullscreen',
-                    false
-                );
-
-            }
-        );
-
-
-        // =====================================================
-        // LOAD ASCEND
-        // =====================================================
-
-        this.window.loadFile(
-            path.join(
-                __dirname,
-                '../index.html'
-            )
-        );
-
-
-        // =====================================================
-        // LOAD ERROR
-        // =====================================================
-
-        this.window.webContents.on(
-            'did-fail-load',
-            (
-                event,
-                errorCode,
-                errorDescription
-            ) => {
-
-                console.error(
-                    'ASCEND failed to load:',
-                    errorCode,
-                    errorDescription
-                );
-
-            }
-        );
-
-
-        // =====================================================
-        // RENDERER CRASH
-        // =====================================================
-
-        this.window.webContents.on(
-            'render-process-gone',
-            (
-                event,
-                details
-            ) => {
-
-                console.error(
-                    'ASCEND renderer process stopped:',
-                    details
-                );
-
-            }
-        );
-
-
-        // =====================================================
-        // WINDOW CLOSED
-        // =====================================================
-
-        this.window.on(
-            'closed',
-            () => {
-
-                this.unregisterDisplayListeners();
-
-                this.window = null;
-
-                this.windowState = null;
-
-            }
-        );
-
-
-        // =====================================================
-        // DEVELOPMENT TOOLS
-        // =====================================================
-
-        if (
-            !this.isProduction()
-        ) {
-
-            this.window.webContents.openDevTools();
-
-        }
-
-
-        return this.window;
-    }
-
-
-    // =========================================================
-    // DISPLAY LISTENERS
-    // =========================================================
-
-    registerDisplayListeners() {
-
-        if (
-            this.displayListenersRegistered
-        ) {
-            return;
-        }
-
-
-        screen.on(
-            'display-removed',
-            this.handleDisplayRemoved
-        );
-
-
-        screen.on(
-            'display-metrics-changed',
-            this.handleDisplayMetricsChanged
-        );
-
-
-        this.displayListenersRegistered = true;
-    }
-
-
-    unregisterDisplayListeners() {
-
-        if (
-            !this.displayListenersRegistered
-        ) {
-            return;
-        }
-
-
-        screen.removeListener(
-            'display-removed',
-            this.handleDisplayRemoved
-        );
-
-
-        screen.removeListener(
-            'display-metrics-changed',
-            this.handleDisplayMetricsChanged
-        );
-
-
-        this.displayListenersRegistered = false;
-    }
-
-
-    // =========================================================
-    // DISPLAY REMOVED
-    // =========================================================
-
-    handleDisplayRemoved() {
-
-        if (
-            !this.window ||
-            this.window.isDestroyed()
-        ) {
-            return;
-        }
-
-
-        setTimeout(
-            () => {
-
-                this.ensureWindowVisible();
-
-            },
-            100
-        );
-    }
-
-
-    // =========================================================
-    // DISPLAY METRICS CHANGED
-    // =========================================================
-
-    handleDisplayMetricsChanged() {
-
-        if (
-            !this.window ||
-            this.window.isDestroyed()
-        ) {
-            return;
-        }
-
-
-        setTimeout(
-            () => {
-
-                this.ensureWindowVisible();
-
-            },
-            100
-        );
-    }
-
-
-    // =========================================================
-    // VALIDATE WINDOW POSITION
-    // =========================================================
-
-    validateWindowPosition(
-        x,
-        y,
-        width,
-        height
-    ) {
-
-        // No saved position
-        if (
-            typeof x !== 'number' ||
-            typeof y !== 'number'
-        ) {
-
-            return this.getCenteredPosition(
-                width,
-                height
-            );
-        }
-
-
-        const windowRight =
-            x + width;
-
-        const windowBottom =
-            y + height;
-
-
-        const displays =
-            screen.getAllDisplays();
-
-
-        // Check whether any monitor contains
-        // a visible portion of the window.
-        for (
-            const display of displays
-        ) {
-
-            const area =
-                display.workArea;
-
-
-            const horizontalOverlap =
-                windowRight > area.x &&
-                x < area.x + area.width;
-
-
-            const verticalOverlap =
-                windowBottom > area.y &&
-                y < area.y + area.height;
-
-
-            if (
-                horizontalOverlap &&
-                verticalOverlap
-            ) {
-
-                return {
-                    x,
-                    y
-                };
-            }
-        }
-
-
-        // Saved position is no longer valid.
-        return this.getCenteredPosition(
-            width,
-            height
-        );
-    }
-
-
-    // =========================================================
-    // CENTER WINDOW
-    // =========================================================
-
-    getCenteredPosition(
-        width,
-        height
-    ) {
-
-        const primaryDisplay =
-            screen.getPrimaryDisplay();
-
-
-        const area =
-            primaryDisplay.workArea;
-
-
-        return {
-
-            x: Math.round(
-                area.x +
-                (area.width - width) / 2
-            ),
-
-            y: Math.round(
-                area.y +
-                (area.height - height) / 2
-            )
-        };
-    }
-
-
-    // =========================================================
-    // ENSURE WINDOW IS VISIBLE
-    // =========================================================
-
-    ensureWindowVisible() {
-
-        if (
-            !this.window ||
-            this.window.isDestroyed()
-        ) {
-            return;
-        }
-
-
-        // Don't interfere with special states
-        if (
-            this.window.isMaximized() ||
-            this.window.isFullScreen()
-        ) {
-            return;
-        }
-
-
-        const bounds =
-            this.window.getBounds();
-
-
-        const displays =
-            screen.getAllDisplays();
-
-
-        const visible =
-            displays.some(
-                display => {
-
-                    const area =
-                        display.workArea;
-
-
-                    const horizontal =
-                        bounds.x <
-                            area.x + area.width &&
-                        bounds.x + bounds.width >
-                            area.x;
-
-
-                    const vertical =
-                        bounds.y <
-                            area.y + area.height &&
-                        bounds.y + bounds.height >
-                            area.y;
-
-
-                    return (
-                        horizontal &&
-                        vertical
-                    );
-                }
-            );
-
-
-        if (visible) {
-            return;
-        }
-
-
-        // Window is completely outside
-        // all available monitors.
-        const position =
-            this.getCenteredPosition(
-                bounds.width,
-                bounds.height
-            );
-
-
-        this.window.setBounds({
-
-            x: position.x,
-            y: position.y,
-
-            width: bounds.width,
-            height: bounds.height
-
-        });
-    }
-
-
-    // =========================================================
-    // GET WINDOW
-    // =========================================================
-
-    get() {
-
-        return this.window;
-    }
-
-
-    // =========================================================
-    // GET BOUNDS
-    // =========================================================
-
-    getBounds() {
-
-        if (
-            !this.window ||
-            this.window.isDestroyed()
-        ) {
-            return null;
-        }
-
-
-        return this.window.getBounds();
-    }
-
-
-    // =========================================================
-    // SET BOUNDS
-    // =========================================================
-
-    setBounds(bounds) {
-
-        if (
-            !this.window ||
-            this.window.isDestroyed()
-        ) {
-            return false;
-        }
-
-
-        // Don't resize special states.
-        if (
-            this.window.isMaximized() ||
-            this.window.isFullScreen()
-        ) {
-            return false;
-        }
-
-
-        if (
-            !bounds ||
-            typeof bounds !== 'object'
-        ) {
-            return false;
-        }
-
-
-        let {
-            x,
-            y,
-            width,
-            height
-        } = bounds;
-
-
-        // Validate coordinates
-        if (
-            typeof x !== 'number' ||
-            typeof y !== 'number'
-        ) {
-            return false;
-        }
-
-
-        // Validate dimensions
-        if (
-            typeof width !== 'number' ||
-            typeof height !== 'number'
-        ) {
-            return false;
-        }
-
-
-        width = Math.max(
-            this.MIN_WIDTH,
-            Math.round(width)
-        );
-
-
-        height = Math.max(
-            this.MIN_HEIGHT,
-            Math.round(height)
-        );
-
-
-        x = Math.round(x);
-        y = Math.round(y);
-
-
-        this.window.setBounds({
-
-            x,
-            y,
-
-            width,
-            height
-
-        });
-
-
-        return true;
-    }
-
-
-    // =========================================================
-    // MINIMIZE
-    // =========================================================
-
-    minimize() {
-
-        if (
-            !this.window ||
-            this.window.isDestroyed()
-        ) {
-            return;
-        }
-
-
-        this.window.minimize();
-    }
-
-
-    // =========================================================
-    // MAXIMIZE / RESTORE
-    // =========================================================
-
-    toggleMaximize() {
-
-        if (
-            !this.window ||
-            this.window.isDestroyed()
-        ) {
-            return;
-        }
-
-
-        if (
-            this.window.isMaximized()
-        ) {
-
-            this.window.unmaximize();
-
-        } else {
-
-            this.window.maximize();
-
-        }
-    }
-
-
-    // =========================================================
-    // IS MAXIMIZED
-    // =========================================================
-
-    isMaximized() {
-
-        if (
-            !this.window ||
-            this.window.isDestroyed()
-        ) {
-            return false;
-        }
-
-
-        return this.window.isMaximized();
-    }
-
-
-    // =========================================================
-    // CLOSE
-    // =========================================================
-
-    close() {
-
-        if (
-            !this.window ||
-            this.window.isDestroyed()
-        ) {
-            return;
-        }
-
-
-        this.window.close();
-    }
-
-
-    // =========================================================
-    // FULLSCREEN
-    // =========================================================
-
-    toggleFullscreen() {
-
-        if (
-            !this.window ||
-            this.window.isDestroyed()
-        ) {
-            return false;
-        }
-
-
-        const fullscreen =
-            this.window.isFullScreen();
-
-
-        this.window.setFullScreen(
-            !fullscreen
-        );
-
-
-        return !fullscreen;
-    }
-
-
-    // =========================================================
-    // EXIT FULLSCREEN
-    // =========================================================
-
-    exitFullscreen() {
-
-        if (
-            !this.window ||
-            this.window.isDestroyed()
-        ) {
-            return;
-        }
-
-
-        if (
-            this.window.isFullScreen()
-        ) {
-
-            this.window.setFullScreen(
-                false
-            );
-        }
-    }
-
-
-    // =========================================================
-    // IS FULLSCREEN
-    // =========================================================
-
-    isFullscreen() {
-
-        if (
-            !this.window ||
-            this.window.isDestroyed()
-        ) {
-            return false;
-        }
-
-
-        return this.window.isFullScreen();
-    }
-
-
-    // =========================================================
-    // START RESIZE
-    // =========================================================
-    //
-    // The renderer performs the actual drag calculation.
-    // Electron receives the resulting bounds through
-    // setBounds().
-    // =========================================================
-
-    startResize(direction) {
-
-        if (
-            !this.window ||
-            this.window.isDestroyed()
-        ) {
-            return false;
-        }
-
-
-        if (
-            this.window.isMaximized() ||
-            this.window.isFullScreen()
-        ) {
-            return false;
-        }
-
-
-        const validDirections = [
-
-            'top',
-            'bottom',
-            'left',
-            'right',
-
-            'top-left',
-            'top-right',
-
-            'bottom-left',
-            'bottom-right'
-
-        ];
-
-
-        return validDirections.includes(
-            direction
-        );
-    }
-
-
-    // =========================================================
-    // PRODUCTION CHECK
-    // =========================================================
-
-    isProduction() {
-
-        try {
-
-            const {
-                app
-            } = require('electron');
-
-            return app.isPackaged;
-
-        } catch {
-
-            return false;
-
-        }
-    }
+const path = require('path');
+const { pathToFileURL } = require('url');
+
+const MIN_WIDTH = 1100;
+const MIN_HEIGHT = 700;
+const DEFAULT_WIDTH = 1440;
+const DEFAULT_HEIGHT = 900;
+
+function finiteNumber(value) {
+  return typeof value === 'number' && Number.isFinite(value);
 }
 
+class WindowManager {
+  constructor() {
+    this.window = null;
+  }
 
-// =========================================================
-// EXPORT
-// =========================================================
+  get() {
+    return this.window && !this.window.isDestroyed() ? this.window : null;
+  }
+
+  create() {
+    const existing = this.get();
+    if (existing) {
+      existing.show();
+      existing.focus();
+      return existing;
+    }
+
+    const savedState = windowStateKeeper({
+      defaultWidth: DEFAULT_WIDTH,
+      defaultHeight: DEFAULT_HEIGHT,
+    });
+
+    const iconFile = process.platform === 'win32' ? 'icon.ico' : 'icon.png';
+    const win = new BrowserWindow({
+      x: savedState.x,
+      y: savedState.y,
+      width: Math.max(MIN_WIDTH, savedState.width || DEFAULT_WIDTH),
+      height: Math.max(MIN_HEIGHT, savedState.height || DEFAULT_HEIGHT),
+      minWidth: MIN_WIDTH,
+      minHeight: MIN_HEIGHT,
+      icon: path.join(__dirname, '..', 'build', iconFile),
+      show: false,
+      frame: false,
+      title: 'ASCEND Journal',
+      backgroundColor: '#edf2f6',
+      webPreferences: {
+        preload: path.join(__dirname, 'preload.js'),
+        contextIsolation: true,
+        nodeIntegration: false,
+        sandbox: true,
+        webSecurity: true,
+        spellcheck: false,
+      },
+    });
+
+    this.window = win;
+    savedState.manage(win);
+
+    win.once('ready-to-show', () => {
+      if (!win.isDestroyed()) win.show();
+    });
+
+    win.on('maximize', () => this.sendWindowState('window-maximized', true));
+    win.on('unmaximize', () => this.sendWindowState('window-maximized', false));
+    win.on('enter-full-screen', () => this.sendWindowState('window-fullscreen', true));
+    win.on('leave-full-screen', () => this.sendWindowState('window-fullscreen', false));
+    win.on('closed', () => {
+      if (this.window === win) this.window = null;
+    });
+
+    win.webContents.setWindowOpenHandler(({ url }) => {
+      if (typeof url === 'string' && /^https?:\/\//i.test(url)) {
+        shell.openExternal(url).catch(() => {});
+      }
+      return { action: 'deny' };
+    });
+
+    win.webContents.on('will-navigate', (event, url) => {
+      if (!String(url || '').startsWith('file://')) event.preventDefault();
+    });
+
+    win.webContents.on('render-process-gone', (_event, details) => {
+      console.error('ASCEND renderer process ended:', details.reason);
+    });
+
+    const rendererUrl = pathToFileURL(path.join(__dirname, '..', 'index.html')).toString();
+    win.loadURL(rendererUrl).catch((error) => {
+      console.error('ASCEND window failed to load:', error);
+    });
+
+    return win;
+  }
+
+  sendWindowState(channel, value) {
+    const win = this.get();
+    if (win) win.webContents.send(channel, value);
+  }
+
+  minimize() {
+    const win = this.get();
+    if (win) win.minimize();
+  }
+
+  toggleMaximize() {
+    const win = this.get();
+    if (!win) return false;
+    if (win.isMaximized()) win.unmaximize();
+    else win.maximize();
+    return win.isMaximized();
+  }
+
+  close() {
+    const win = this.get();
+    if (win) win.close();
+  }
+
+  isMaximized() {
+    const win = this.get();
+    return Boolean(win && win.isMaximized());
+  }
+
+  getBounds() {
+    const win = this.get();
+    return win ? win.getBounds() : null;
+  }
+
+  setBounds(bounds) {
+    const win = this.get();
+    if (!win || !bounds || typeof bounds !== 'object') return false;
+
+    const current = win.getBounds();
+    const display = screen.getDisplayMatching(current);
+    const workArea = display.workArea;
+    const maxWidth = Math.max(MIN_WIDTH, workArea.width);
+    const maxHeight = Math.max(MIN_HEIGHT, workArea.height);
+    const width = finiteNumber(bounds.width)
+      ? Math.min(maxWidth, Math.max(MIN_WIDTH, Math.round(bounds.width)))
+      : current.width;
+    const height = finiteNumber(bounds.height)
+      ? Math.min(maxHeight, Math.max(MIN_HEIGHT, Math.round(bounds.height)))
+      : current.height;
+    const x = finiteNumber(bounds.x) ? Math.round(bounds.x) : current.x;
+    const y = finiteNumber(bounds.y) ? Math.round(bounds.y) : current.y;
+
+    win.setBounds({ x, y, width, height });
+    return true;
+  }
+
+  startResize() {
+    // The v1.7 frameless renderer computes resize bounds locally and sends them
+    // through setBounds. This explicit no-op retains its future IPC contract
+    // without exposing an unsupported native-resize primitive.
+    return false;
+  }
+
+  toggleFullscreen() {
+    const win = this.get();
+    if (!win) return false;
+    win.setFullScreen(!win.isFullScreen());
+    return win.isFullScreen();
+  }
+
+  exitFullscreen() {
+    const win = this.get();
+    if (win && win.isFullScreen()) win.setFullScreen(false);
+  }
+
+  isFullscreen() {
+    const win = this.get();
+    return Boolean(win && win.isFullScreen());
+  }
+}
 
 module.exports = WindowManager;

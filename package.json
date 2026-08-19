@@ -1,18 +1,29 @@
 {
   "name": "ascend-journal",
   "productName": "ASCEND Journal",
-  "version": "1.0.1",
-  "description": "ASCEND Trading Journal",
+  "version": "1.8.1",
+  "private": true,
+  "description": "ASCEND Journal v1.8 design-consolidation desktop build and automated quality gate.",
   "main": "electron/main.js",
-  "scripts": {
-    "start": "electron .",
-    "build": "electron-builder --win"
-  },
-  "keywords": [],
   "author": "Simon",
   "license": "ISC",
   "type": "commonjs",
+  "scripts": {
+    "start": "electron .",
+    "build:win": "electron-builder --win nsis",
+    "build": "pnpm run build:win",
+    "test:electron:syntax": "node --check electron/main.js && node --check electron/preload.js && node --check electron/window-manager.js",
+    "migrations:check": "node scripts/check-migrations.js",
+    "migrations:status": "node scripts/migration-status.js",
+    "test:syntax": "node extract_script.js && node --check app.js",
+    "test:unit": "node --test tests/unit/*.test.js",
+    "test:integration": "node --test tests/integration/*.test.js",
+    "test:e2e": "playwright test",
+    "test:all": "pnpm run migrations:check && pnpm run test:syntax && pnpm run test:electron:syntax && pnpm run test:unit && pnpm run test:integration && pnpm run test:e2e",
+    "test:ci": "pnpm run test:all"
+  },
   "devDependencies": {
+    "@playwright/test": "1.57.0",
     "electron": "^43.4.0",
     "electron-builder": "^26.15.3"
   },
@@ -20,9 +31,14 @@
     "electron-updater": "^6.8.9",
     "electron-window-state": "^5.0.3"
   },
+  "engines": {
+    "node": ">=22.0.0"
+  },
   "build": {
     "appId": "com.ascend.journal",
     "productName": "ASCEND Journal",
+    "icon": "build/icon.ico",
+    "asar": true,
     "directories": {
       "output": "dist"
     },
@@ -35,11 +51,16 @@
       }
     ],
     "files": [
-      "**/*",
-      "!dist/**/*"
+      "index.html",
+      "electron/**/*",
+      "build/icon.png",
+      "build/icon.ico",
+      "package.json"
     ],
     "win": {
-      "target": "nsis"
+      "target": ["nsis"],
+      "icon": "build/icon.ico",
+      "artifactName": "ASCEND-Journal-Setup-${version}.${ext}"
     },
     "nsis": {
       "oneClick": false,
