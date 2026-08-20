@@ -2220,6 +2220,22 @@ body.ascend-v18 #sidebar.rail-collapsed .rail-workspace-signout{display:inline-f
 body.ascend-v18 #sidebar.rail-collapsed .rail-workspace-signout:hover{color:var(--negative);border-color:var(--negative);}
 @media(max-width:700px){body.ascend-v18 #modal-root .modal{width:calc(100vw - 16px)!important;max-width:calc(100vw - 16px)!important;min-width:0!important;}body.ascend-v18 #modal-root .modal.fast-capture-modal,body.ascend-v18 #modal-root .modal.asc-review-journal,body.ascend-v18 #modal-root .modal.asc-trade-casefile{width:calc(100vw - 2px)!important;max-width:calc(100vw - 2px)!important;box-sizing:border-box;}body.ascend-v18 .modal.asc-trade-casefile .modal-tabs{display:flex!important;width:100%!important;max-width:100%!important;overflow:hidden!important;box-sizing:border-box;}body.ascend-v18 .modal.asc-trade-casefile .modal-tab{flex:1 1 0!important;min-width:0!important;white-space:normal!important;padding:9px 3px!important;line-height:1.15;overflow-wrap:anywhere;}body.ascend-v18 .modal.asc-trade-casefile .modal-footer .btn,body.ascend-v18 .modal.asc-review-journal .modal-footer .btn,body.ascend-v18 #fast-capture-save,body.ascend-v18 #open-next-review{min-height:44px;}}
 @media(max-width:680px){body.ascend-v18 .asc-trades-instrument-band{grid-template-columns:repeat(2,minmax(0,1fr))!important;min-width:0;}body.ascend-v18 .asc-trades-instrument-band .kpi-card{min-width:0!important;padding:14px!important;}body.ascend-v18 .asc-timeline-day{grid-template-columns:minmax(0,1fr)!important;min-width:0;}body.ascend-v18 .asc-timeline-events{border-left:0!important;min-width:0;}body.ascend-v18 .asc-timeline-event{grid-template-columns:44px 8px minmax(0,1fr) 76px!important;gap:8px!important;padding:14px 4px!important;min-width:0;}body.ascend-v18 .asc-timeline-context{display:none!important;}body.ascend-v18 .asc-timeline-identity{min-width:0!important;}body.ascend-v18 .asc-timeline-event strong{font-size:12px!important;min-width:0;}}
+/* ---- Update release summary: remote note content is rendered as escaped text only ---- */
+body.ascend-v18 .asc-update-release{margin-top:14px;padding:18px 20px 20px;border:1px solid var(--asc-line);border-radius:14px;background:linear-gradient(135deg,rgba(var(--accent-rgb),.085),rgba(var(--accent-rgb),.018) 58%,transparent);}
+body.ascend-v18 .asc-update-release-top{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;}
+body.ascend-v18 .asc-update-release-title{font:700 16px var(--font-display);letter-spacing:.015em;color:var(--text);}
+body.ascend-v18 .asc-update-summary{margin-top:15px;max-width:760px;}
+body.ascend-v18 .asc-update-summary-lead{padding:13px 15px;border-left:2px solid var(--accent);background:rgba(var(--accent-rgb),.055);}
+body.ascend-v18 .asc-update-eyebrow{font:700 9px var(--font-display);letter-spacing:.18em;color:var(--accent);}
+body.ascend-v18 .asc-update-summary-lead p{margin:6px 0 0;color:var(--text-muted);font-size:12.5px;line-height:1.65;}
+body.ascend-v18 .asc-update-highlights{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin-top:12px;}
+body.ascend-v18 .asc-update-highlight{display:flex;gap:10px;min-width:0;padding:12px;border:1px solid var(--asc-line);border-radius:10px;background:rgba(255,255,255,.018);}
+body.ascend-v18 .asc-update-highlight-index{font:700 10px var(--font-mono);letter-spacing:.08em;color:var(--accent);padding-top:2px;}
+body.ascend-v18 .asc-update-highlight h4{margin:0;color:var(--text);font:700 11px var(--font-display);letter-spacing:.025em;}
+body.ascend-v18 .asc-update-highlight p{margin:5px 0 0;color:var(--text-muted);font-size:11px;line-height:1.55;}
+body.ascend-v18 .asc-update-release-foot{margin-top:14px;color:var(--text-faint);font-size:11px;}
+@media(max-width:760px){body.ascend-v18 .asc-update-release{padding:15px;}body.ascend-v18 .asc-update-highlights{grid-template-columns:1fr;}body.ascend-v18 .asc-update-release-top{gap:10px;}}
+
 /* V18_RESEARCH_AND_SYSTEM_SURFACES_END */
 /* V18_REVIEW_JOURNAL_END */
 /* V18_TRADE_CASEFILE_END */
@@ -2356,7 +2372,7 @@ body.ascend-v18 #sidebar.rail-collapsed .rail-workspace-signout:hover{color:var(
 // ===================== CONSTANTS =====================
 // Single source of truth for the app version shown in the UI (Settings → Updates, etc).
 // Do not hardcode a version string anywhere else — reference ASCEND_APP_VERSION instead.
-const ASCEND_APP_VERSION = '1.8.1';
+const ASCEND_APP_VERSION = '1.8.2';
 // Rank 5 client-side migration registry. The canonical production ledger and SQL
 // checksums live in migrations/; this runtime map makes local cache compatibility
 // explicit without exposing or querying Supabase's internal migration ledger.
@@ -7405,6 +7421,78 @@ function settingsSectionMeta(key){
 // (see electron/main.js autoUpdater listeners) — checkForUpdates()/installUpdate() below
 // only kick things off, they don't set the resulting state themselves.
 const UPDATE_STATES = ['idle','checking','up-to-date','update-available','downloading','ready-to-install','error'];
+
+// Release notes are remote content. Convert Markdown/HTML to small, plain-text
+// sections and escape it at render time; never insert the GitHub release body as HTML.
+function normalizeReleaseNotes(value){
+  if(Array.isArray(value)) return value.map(item=>{
+    if(typeof item === 'string') return item;
+    return item && typeof item.note === 'string' ? item.note : '';
+  }).filter(Boolean).join('\n\n');
+  return typeof value === 'string' ? value : '';
+}
+function decodeReleaseEntities(value){
+  const entities = { amp:'&', apos:"'", '#39':"'", quot:'\"', lt:'<', gt:'>', nbsp:' ' };
+  return String(value||'').replace(/&(#39|amp|apos|quot|lt|gt|nbsp);/gi, (match,name)=>entities[String(name).toLowerCase()] || match);
+}
+function releaseSummaryFrom(rawNotes){
+  const raw = normalizeReleaseNotes(rawNotes);
+  if(!raw.trim()) return { intro:'Release notes are not available for this update.', highlights:[] };
+  const marked = raw
+    .replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, '')
+    .replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi, '')
+    .replace(/<h([1-6])\b[^>]*>/gi, '\n@@ASCEND_H$1@@')
+    .replace(/<\/h[1-6]>/gi, '\n')
+    .replace(/<li\b[^>]*>/gi, '\n- ')
+    .replace(/<\/li>/gi, '\n')
+    .replace(/<br\s*\/?>/gi, '\n')
+    .replace(/<\/(p|div|section|article|tr|table)>/gi, '\n')
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/(^|\n)\s*(#{1,6})\s+/g, (match,prefix,hashes)=>`${prefix}@@ASCEND_H${hashes.length}@@`);
+  const preamble = [];
+  const sections = [];
+  let current = null;
+  marked.split(/\n+/).map(line=>decodeReleaseEntities(line).replace(/\s+/g,' ').trim()).forEach(line=>{
+    if(!line || /^[|:\-\s]+$/.test(line)) return;
+    const heading = line.match(/^@@ASCEND_H([1-6])@@\s*(.*)$/);
+    if(heading){
+      const level = Number(heading[1]);
+      const title = heading[2].replace(/^[-*]\s*/, '').trim();
+      if(!title) return;
+      if(level === 1) return;
+      current = { title, entries:[] };
+      sections.push(current);
+      return;
+    }
+    const clean = line.replace(/^[-*•]\s*/, '').replace(/^\d+[.)]\s*/, '').trim();
+    if(!clean || /^version\s+\d+/i.test(clean)) return;
+    (current ? current.entries : preamble).push(clean);
+  });
+  const intro = preamble.find(line=>line.length>36) || sections.flatMap(section=>section.entries).find(line=>line.length>36) || 'This update is ready to install.';
+  const ignored = /^(verification|preserved behavior|upgrade note|references?)$/i;
+  const highlights = sections.filter(section=>!ignored.test(section.title) && section.entries.length)
+    .slice(0,3)
+    .map(section=>({ title:section.title, detail:section.entries.slice(0,2).join(' ') }));
+  if(!highlights.length && preamble.length){
+    highlights.push({ title:'Release highlights', detail:preamble.slice(1,3).join(' ') || preamble[0] });
+  }
+  return { intro, highlights };
+}
+function updateSummaryMarkup(rawNotes){
+  const summary = releaseSummaryFrom(rawNotes);
+  const cards = summary.highlights.map((item,index)=>`
+    <article class="asc-update-highlight">
+      <span class="asc-update-highlight-index">${String(index+1).padStart(2,'0')}</span>
+      <div><h4>${esc(item.title)}</h4><p>${esc(item.detail)}</p></div>
+    </article>`).join('');
+  return `<section class="asc-update-summary" aria-label="Release summary">
+    <div class="asc-update-summary-lead">
+      <div class="asc-update-eyebrow">UPDATE SUMMARY</div>
+      <p>${esc(summary.intro)}</p>
+    </div>
+    ${cards ? `<div class="asc-update-highlights">${cards}</div>` : ''}
+  </section>`;
+}
 const UpdateManager = {
   state: 'idle',
   currentVersion: ASCEND_APP_VERSION,
@@ -7442,7 +7530,7 @@ if(window.ascend && typeof window.ascend.onUpdaterEvent === 'function'){
       case 'update-available':
         UpdateManager.state = 'update-available';
         UpdateManager.latestVersion = (payload.info && payload.info.version) || null;
-        UpdateManager.releaseNotes = (payload.info && typeof payload.info.releaseNotes === 'string') ? payload.info.releaseNotes : '';
+        UpdateManager.releaseNotes = normalizeReleaseNotes(payload.info && payload.info.releaseNotes);
         break;
       case 'update-not-available':
         UpdateManager.state = 'up-to-date'; UpdateManager.latestVersion = null; UpdateManager.releaseNotes = '';
@@ -7751,22 +7839,20 @@ const SETTINGS_PANELS = {
         </div>
 
         ${showAvailableCard ? `
-        <div class="card" style="margin-top:14px;">
-          <div class="flex-between">
-            <div style="max-width:420px;">
-              <div style="font-size:14px;font-weight:600;">Version ${esc(UpdateManager.latestVersion||'')}</div>
-              <div class="hint" style="margin-top:4px;">${esc(UpdateManager.releaseNotes||'')}</div>
-            </div>
+        <section class="asc-update-release" style="margin-top:14px;">
+          <div class="asc-update-release-top">
+            <div class="asc-update-release-title">What’s new in ${esc(UpdateManager.latestVersion||'the latest version')}</div>
             <span class="badge b-accent">NEW</span>
           </div>
-          ${st==='update-available' ? `<div class="hint" style="margin-top:14px;">Downloading automatically…</div>` : ''}
+          ${updateSummaryMarkup(UpdateManager.releaseNotes)}
+          ${st==='update-available' ? `<div class="asc-update-release-foot">Downloading automatically. You can continue working while the update is prepared.</div>` : ''}
           ${st==='downloading' ? `
             <div style="margin-top:14px;">
               <div class="progress-bar"><div class="fill" style="width:${UpdateManager.progress}%;"></div></div>
-              <div class="faint" style="font-size:10px;margin-top:6px;">Downloading… ${UpdateManager.progress}%</div>
+              <div class="faint" style="font-size:10px;margin-top:6px;">Preparing desktop update… ${UpdateManager.progress}%</div>
             </div>` : ''}
-          ${st==='ready-to-install' ? `<button class="btn btn-primary btn-sm" id="upd-install" style="margin-top:14px;">Restart &amp; Install</button>` : ''}
-        </div>` : ''}
+          ${st==='ready-to-install' ? `<div class="asc-update-release-foot">The update is ready. Restart ASCEND Journal when you are ready to install it.</div><button class="btn btn-primary btn-sm" id="upd-install" style="margin-top:14px;">Restart &amp; Install</button>` : ''}
+        </section>` : ''}
       `;
       const checkBtn = body.querySelector('#upd-check'); if(checkBtn) checkBtn.onclick = ()=> UpdateManager.checkForUpdates();
       const instBtn = body.querySelector('#upd-install'); if(instBtn) instBtn.onclick = ()=> UpdateManager.installUpdate();

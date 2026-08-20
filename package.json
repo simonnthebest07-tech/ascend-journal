@@ -1,7 +1,7 @@
 {
   "name": "ascend-journal",
   "productName": "ASCEND Journal",
-  "version": "1.8.1",
+  "version": "1.8.2",
   "private": true,
   "description": "ASCEND Journal v1.8 design-consolidation desktop build and automated quality gate.",
   "main": "electron/main.js",
