@@ -898,6 +898,34 @@ hr.divider{ border:none; border-top:1px solid var(--border-soft); margin:16px 0;
   #mobile-dock .dock-item .dock-label{ font-size:10px; }
   #mobile-dock .dock-create{ flex-basis:58px; min-width:52px; }
 }
+/* Content 36: iPhone surface polish — presentation only, existing hooks/handlers remain authoritative. */
+@media (max-width:1100px){
+  #mobile-dock{
+    bottom:calc(8px + env(safe-area-inset-bottom));
+    padding:6px;
+    min-height:76px;
+    max-width:calc(100vw - 16px);
+    margin-inline:auto;
+    box-sizing:border-box;
+  }
+  #mobile-dock .dock-item{ min-height:56px; min-width:44px; touch-action:manipulation; }
+  #mobile-dock .dock-item .dock-label{ font-size:clamp(10.5px, 2.8vw, 12px); }
+  #page-content{ scroll-padding-bottom:calc(96px + env(safe-area-inset-bottom)); }
+  #mobile-more-sheet{ overscroll-behavior:contain; }
+  #mobile-more-sheet > #mobile-sheet-close{
+    position:absolute; top:12px; right:14px; min-width:44px; min-height:44px; z-index:1;
+  }
+  #mobile-more-sheet .msheet-brand{ padding-right:88px; }
+  #mobile-more-sheet .msheet-nav-item,
+  #mobile-more-sheet .msheet-util-btn{ min-height:48px; touch-action:manipulation; }
+  body.ascend-keyboard-open #mobile-dock{ transform:translateY(calc(120% + env(safe-area-inset-bottom))); pointer-events:none; }
+  body.ascend-keyboard-open #page-content{ padding-bottom:20px; }
+}
+@media (max-width:390px){
+  #mobile-dock{ left:8px; right:8px; max-width:none; }
+  #mobile-dock .dock-item .dock-label{ font-size:10.5px; }
+  #mobile-more-sheet .msheet-brand{ padding-left:16px; padding-right:82px; }
+}
 @media (prefers-reduced-motion: reduce){ #mobile-dock .dock-item{ transition:none !important; } }
 @media (max-width: 1100px){
   #mobile-dock{
@@ -2885,7 +2913,7 @@ body.ascend-v18 .asc-evidence-grid{grid-template-columns:repeat(auto-fill,minmax
   </div>
 </nav>
 <div id="mobile-sheet-scrim" aria-hidden="true"></div>
-<section id="mobile-more-sheet" aria-label="More workspace tools" aria-hidden="true"><div class="msheet-handle"></div><div class="msheet-brand">ASCEND <span id="mobile-sheet-workspace"></span></div><button class="btn btn-sm btn-ghost" id="mobile-sheet-close" type="button">Close</button><div class="msheet-body" id="mobile-sheet-body"></div></section>
+<section id="mobile-more-sheet" role="dialog" aria-modal="true" aria-labelledby="mobile-sheet-title" aria-label="More workspace tools" aria-hidden="true" tabindex="-1"><div class="msheet-handle"></div><div class="msheet-brand" id="mobile-sheet-title">ASCEND <span id="mobile-sheet-workspace"></span></div><button class="btn btn-sm btn-ghost" id="mobile-sheet-close" type="button">Close</button><div class="msheet-body" id="mobile-sheet-body"></div></section>
 <div id="toast-wrap"></div>
 <div id="modal-root"></div>
 <div id="command-overlay" class="overlay">
@@ -9862,6 +9890,25 @@ document.addEventListener(
       navigator.serviceWorker.register('./sw.js', { scope: './' }).catch(() => {});
     });
   }
+</script>
+<script>
+/* Content 36: keyboard-aware mobile surface; no application state or data is changed. */
+(function(){
+  const root=document.documentElement, body=document.body;
+  const update=()=>{
+    if(!window.visualViewport) return;
+    const keyboardOpen=(window.innerHeight-window.visualViewport.height)>140;
+    body.classList.toggle('ascend-keyboard-open', keyboardOpen);
+    root.style.setProperty('--ascend-viewport-height', `${Math.round(window.visualViewport.height)}px`);
+  };
+  if(window.visualViewport){
+    window.visualViewport.addEventListener('resize', update, {passive:true});
+    window.visualViewport.addEventListener('scroll', update, {passive:true});
+  }
+  window.addEventListener('resize', update, {passive:true});
+  document.addEventListener('focusin', update, {passive:true});
+  update();
+})();
 </script>
 </body>
 </html>
