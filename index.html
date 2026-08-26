@@ -877,6 +877,28 @@ hr.divider{ border:none; border-top:1px solid var(--border-soft); margin:16px 0;
    Hidden entirely above 1100px (wide desktop keeps the Command Rail).
    =================================================================== */
 #mobile-dock{ display:none; }
+/* Content 35: mobile action hierarchy. IDs and existing handlers intentionally remain unchanged. */
+@media (max-width: 1100px){
+  #mobile-dock{ gap:6px; padding:6px; min-height:76px; height:auto; align-items:stretch; }
+  #mobile-dock .dock-cluster{ display:flex; flex:1 1 0; min-width:0; gap:2px; }
+  #mobile-dock .dock-item{ position:relative; min-height:56px; min-width:44px; border-radius:var(--radius-m,12px); padding:7px 3px; gap:4px; }
+  #mobile-dock .dock-item:focus-visible{ outline:2px solid var(--accent); outline-offset:-2px; }
+  #mobile-dock .dock-item .dock-icon{ display:grid; place-items:center; width:24px; height:24px; font-size:0; }
+  #mobile-dock .dock-item .dock-icon svg{ width:21px; height:21px; display:block; }
+  #mobile-dock .dock-item .dock-label{ font-size:10.5px; line-height:1; letter-spacing:.015em; }
+  #mobile-dock .dock-primary .dock-item.active, #mobile-dock .dock-secondary .dock-item.active{ background:color-mix(in srgb,var(--accent) 10%,transparent); color:var(--accent); }
+  #mobile-dock .dock-create{ flex:0 0 64px; min-width:56px; margin:0 2px; background:var(--accent); color:var(--accent-ink); border-radius:var(--radius-m,12px); box-shadow:0 8px 20px -12px rgba(var(--accent-rgb),.95); }
+  #mobile-dock .dock-create .dock-icon{ width:26px; height:26px; }
+  #mobile-dock .dock-create .dock-icon svg{ width:23px; height:23px; }
+  #mobile-dock .dock-review .dock-state-dot{ position:absolute; top:8px; right:calc(50% - 15px); width:6px; height:6px; border-radius:50%; background:var(--accent); opacity:0; box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 16%,transparent); }
+  #mobile-dock .dock-review.active .dock-state-dot{ opacity:1; }
+}
+@media (max-width: 390px){
+  #mobile-dock{ left:8px; right:8px; gap:3px; padding:5px; }
+  #mobile-dock .dock-item .dock-label{ font-size:10px; }
+  #mobile-dock .dock-create{ flex-basis:58px; min-width:52px; }
+}
+@media (prefers-reduced-motion: reduce){ #mobile-dock .dock-item{ transition:none !important; } }
 @media (max-width: 1100px){
   #mobile-dock{
     display:flex; align-items:stretch; justify-content:space-between;
@@ -2852,11 +2874,15 @@ body.ascend-v18 .asc-evidence-grid{grid-template-columns:repeat(auto-fill,minmax
   </div>
 </div>
 <nav id="mobile-dock" data-testid="mobile-dock" aria-label="Mobile workspace navigation">
-  <button class="dock-item" type="button" data-mobile-route="#/dashboard" aria-label="Dashboard"><span class="dock-icon" aria-hidden="true">⌂</span><span class="dock-label">Today</span></button>
-  <button class="dock-item" type="button" data-mobile-route="#/trades" aria-label="Trades"><span class="dock-icon" aria-hidden="true">≡</span><span class="dock-label">Trades</span></button>
-  <button class="dock-item dock-create" type="button" id="mobile-log-trade" data-testid="mobile-log-trade" aria-label="Log Trade"><span class="dock-icon">+</span><span class="dock-label">Log</span></button>
-  <button class="dock-item" type="button" id="mobile-review-next" data-testid="mobile-review-next" aria-label="Review next trade"><span class="dock-icon">✓</span><span class="dock-label">Review</span></button>
-  <button class="dock-item" type="button" id="mobile-more-trigger" aria-expanded="false" aria-controls="mobile-more-sheet" aria-label="More workspace tools"><span class="dock-icon">•••</span><span class="dock-label">More</span></button>
+  <div class="dock-cluster dock-primary" role="group" aria-label="Primary destinations">
+    <button class="dock-item" type="button" data-mobile-route="#/dashboard" aria-label="Dashboard"><span class="dock-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 11 9-8 9 8"/><path d="M5 10v10h14V10"/><path d="M9 20v-6h6v6"/></svg></span><span class="dock-label">Today</span></button>
+    <button class="dock-item" type="button" data-mobile-route="#/trades" aria-label="Trades"><span class="dock-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16"/><path d="M4 12h16"/><path d="M4 18h16"/></svg></span><span class="dock-label">Trades</span></button>
+  </div>
+  <button class="dock-item dock-create" type="button" id="mobile-log-trade" data-testid="mobile-log-trade" aria-label="Log Trade"><span class="dock-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14"/><path d="M5 12h14"/></svg></span><span class="dock-label">Log</span></button>
+  <div class="dock-cluster dock-secondary" role="group" aria-label="Context and secondary tools">
+    <button class="dock-item dock-review" type="button" id="mobile-review-next" data-testid="mobile-review-next" aria-label="Review next trade"><span class="dock-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 4 4L19 6"/></svg></span><span class="dock-label">Review</span><span class="dock-state-dot" aria-hidden="true"></span></button>
+    <button class="dock-item" type="button" id="mobile-more-trigger" aria-expanded="false" aria-controls="mobile-more-sheet" aria-label="More workspace tools"><span class="dock-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="5" cy="12" r="1" fill="currentColor"/><circle cx="12" cy="12" r="1" fill="currentColor"/><circle cx="19" cy="12" r="1" fill="currentColor"/></svg></span><span class="dock-label">More</span></button>
+  </div>
 </nav>
 <div id="mobile-sheet-scrim" aria-hidden="true"></div>
 <section id="mobile-more-sheet" aria-label="More workspace tools" aria-hidden="true"><div class="msheet-handle"></div><div class="msheet-brand">ASCEND <span id="mobile-sheet-workspace"></span></div><button class="btn btn-sm btn-ghost" id="mobile-sheet-close" type="button">Close</button><div class="msheet-body" id="mobile-sheet-body"></div></section>
