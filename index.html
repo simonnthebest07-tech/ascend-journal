@@ -2914,6 +2914,53 @@ body.ascend-v18 .asc-evidence-grid{grid-template-columns:repeat(auto-fill,minmax
   #mobile-dock *,#mobile-more-sheet *{transition:none!important;animation:none!important;}
 }
 
+
+/* Content 36: iOS-native UX refinement — benchmark-backed presentation only. */
+@media (max-width:600px){
+  /* Current context first: page headers remain visible and secondary copy stays quiet. */
+  .page-header,.asc-page-header{padding-top:8px!important;padding-bottom:14px!important;}
+  .page-header h1,.asc-page-header h1{font-size:clamp(26px,7.6vw,34px)!important;line-height:1.06!important;letter-spacing:-.035em!important;}
+  .page-header p,.asc-page-header p{font-size:14px!important;line-height:1.45!important;}
+  .asc-page-kicker,.asc-instrument-label,.kpi-label{font-size:10px!important;letter-spacing:.14em!important;}
+
+  /* Use grouped list rhythm rather than repeated desktop card chrome. */
+  .asc-section + .asc-section{margin-top:12px!important;}
+  .asc-section,.asc-card,.card{border-radius:var(--mobile-radius-md)!important;}
+  .asc-section .section-head,.asc-section .asc-section-head{padding-bottom:10px!important;}
+  .asc-section p,.asc-card p,.card p{line-height:1.45;}
+
+  /* Dashboard answers in the benchmark order: context, result, attention, next action. */
+  .asc-command-dashboard .asc-context-bar,.asc-command-dashboard .asc-command-context{order:-3;}
+  .asc-command-dashboard .asc-command-hero{order:-2;}
+  .asc-command-dashboard .asc-kpi-strip{order:-1;}
+  .asc-command-dashboard .asc-next-action{box-shadow:0 10px 30px rgba(0,0,0,.14);}
+  .asc-command-dashboard .asc-next-action h2{font-size:22px!important;line-height:1.12!important;}
+  .asc-command-dashboard .asc-next-action p{font-size:14px!important;}
+
+  /* Trade rows expose the primary decision data first; secondary metadata wraps safely. */
+  .asc-trade-event .asc-event-title,.asc-trade-event strong{font-size:16px!important;line-height:1.15!important;}
+  .asc-trade-event .asc-event-meta,.asc-trade-event small{font-size:12px!important;line-height:1.35!important;}
+  .asc-trade-event .asc-event-pnl{font-weight:700!important;}
+
+  /* Search is a page tool; filters are a secondary stack below it. */
+  .asc-trade-commandbar-redesigned .search-wrap{border-color:color-mix(in srgb,var(--accent) 42%,var(--border))!important;background:var(--surface-2)!important;}
+  .asc-trade-filter-controls{margin-top:4px!important;}
+  .asc-trade-views{margin-top:8px!important;}
+
+  /* Long tasks read like a native full-height task surface, not a desktop dialog. */
+  .modal.modal-lg{width:calc(100vw - 12px)!important;max-height:calc(100svh - 8px)!important;margin-top:8px!important;border-radius:22px 22px 0 0!important;align-self:end!important;}
+  .modal.modal-lg .modal-header{position:sticky;top:0;z-index:2;padding-top:calc(12px + env(safe-area-inset-top));background:var(--surface-2);}
+  .modal.modal-lg .modal-body{max-height:calc(100svh - 148px)!important;}
+  .modal.modal-lg .modal-footer{padding-bottom:calc(14px + env(safe-area-inset-bottom));}
+
+  /* Preserve accessible labels and avoid relying on color alone for active states. */
+  #mobile-dock .dock-item.active{font-weight:700;}
+  #mobile-dock .dock-item.active .dock-label::after{content:' · active';position:absolute;clip:rect(0 0 0 0);height:1px;width:1px;overflow:hidden;}
+  @media (prefers-contrast:more){
+    #mobile-dock,#mobile-more-sheet,.asc-trade-event,.asc-section,.card{border-color:var(--text-muted)!important;}
+  }
+}
+
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.112.3"></script>
 </head>
