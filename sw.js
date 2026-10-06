@@ -1,61 +1,9 @@
-/* ASCEND Journal v1.10.0 — static application-shell cache only. */
-'use strict';
-
-const CACHE_NAME = 'ASCEND_STATIC_v1_10_0';
-const STATIC_ASSETS = new Set([
-  './',
-  './index.html',
-  './manifest.webmanifest',
-  './icons/icon-192.png',
-  './icons/icon-512.png',
-  './icons/apple-touch-icon.png',
-]);
-
-function isSupabaseRequest(request) {
-  try {
-    return new URL(request.url).hostname === 'stldczwjifswmaahfhjl.supabase.co';
-  } catch (_) {
-    return true;
-  }
-}
-
-function isExplicitStaticRequest(request) {
-  if (request.method !== 'GET' || isSupabaseRequest(request)) return false;
-  const url = new URL(request.url);
-  if (url.origin !== self.location.origin) return false;
-  return [...STATIC_ASSETS].some((asset) => new URL(asset, self.registration.scope).toString() === url.toString());
-}
-
-self.addEventListener('install', (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then((cache) => cache.addAll([...STATIC_ASSETS].map((asset) => new URL(asset, self.registration.scope).toString())))
-      .then(() => self.skipWaiting()),
-  );
+/* ASCEND caches public app files only. Never cache Auth, API responses or media. */
+const CACHE='ascend-shell-8be291540a4ed556';
+const base=new URL('./',self.location.href);
+const assets=['ascend-index.html','vendor/supabase-2.112.3.js','manifest.webmanifest','icons/icon-1024.png','icons/apple-touch-icon.png'].map(p=>new URL(p,base).href);
+self.addEventListener('install',event=>event.waitUntil((async()=>{const cache=await caches.open(CACHE);for(const url of assets){const response=await fetch(new Request(url,{cache:'reload',credentials:'omit'}));if(!response.ok)throw Error('Offline asset missing');await cache.put(url,response);}await self.skipWaiting();})()));
+self.addEventListener('activate',event=>event.waitUntil((async()=>{for(const key of await caches.keys())if(key.startsWith('ascend-shell-')&&key!==CACHE)await caches.delete(key);await self.clients.claim();})()));
+self.addEventListener('fetch',event=>{const req=event.request,url=new URL(req.url);if(req.method!=='GET'||url.origin!==base.origin)return;const relative=url.pathname.slice(base.pathname.length),navigation=req.mode==='navigate'&&['','index.html','ascend-index','ascend-index.html'].includes(relative);if(!navigation&&!assets.includes(url.href))return;
+ event.respondWith((async()=>{const cache=await caches.open(CACHE);if(navigation){try{const response=await fetch(req);if(!response.ok||!(response.headers.get('content-type')||'').includes('text/html'))throw Error('Shell unavailable');await cache.put(assets[0],response.clone());return response;}catch{const saved=await cache.match(assets[0]);return saved||new Response('ASCEND has not been saved for offline use. Open it online once.',{status:503,headers:{'Content-Type':'text/plain'}});}}return (await cache.match(url.href))||fetch(req);})());
 });
-
-self.addEventListener('activate', (event) => {
-  event.waitUntil(
-    caches.keys()
-      .then((keys) => Promise.all(keys.filter((key) => key.startsWith('ASCEND_STATIC_') && key !== CACHE_NAME).map((key) => caches.delete(key))))
-      .then(() => self.clients.claim()),
-  );
-});
-
-self.addEventListener('fetch', (event) => {
-  const { request } = event;
-  if (!isExplicitStaticRequest(request)) return;
-
-  event.respondWith(
-    fetch(request)
-      .then((response) => {
-        if (response && response.ok) {
-          const copy = response.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(request, copy)).catch(() => {});
-        }
-        return response;
-      })
-      .catch(() => caches.match(request).then((cached) => cached || Response.error())),
-  );
-});
-
