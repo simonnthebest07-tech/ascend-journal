@@ -21,6 +21,7 @@ function validFilePath(filePath) {
 
 contextBridge.exposeInMainWorld('ascend', Object.freeze({
   isElectron: true,
+  windowControls: 'native',
   platform: process.platform,
 
   getAppVersion: () => ipcRenderer.invoke('get-app-version'),

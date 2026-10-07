@@ -3,10 +3,15 @@
 const { app, BrowserWindow, dialog, globalShortcut, ipcMain } = require('electron');
 const fs = require('fs/promises');
 const path = require('path');
+const { pathToFileURL } = require('url');
 const { autoUpdater } = require('electron-updater');
 const WindowManager = require('./window-manager');
 
 app.setName('ASCEND Journal');
+if(process.platform==='win32')app.setAppUserModelId('com.ascend.journal');
+// Explicit profile override enables safe disposable release testing; normal profile stays unchanged.
+const profileOverride=app.commandLine.getSwitchValue('user-data-dir');
+if(profileOverride){if(!path.isAbsolute(profileOverride))throw new Error('Profile directory must be absolute.');app.setPath('userData',path.resolve(profileOverride));}
 
 // A OneDrive-hosted source directory can cause Chromium's development disk-cache
 // relocation to fail on Windows. Keep only development session/cache files in the
@@ -86,25 +91,28 @@ if (!singleInstance) {
   });
 }
 
-ipcMain.handle('get-app-version', () => app.getVersion());
-ipcMain.handle('window-minimize', () => windowManager.minimize());
-ipcMain.handle('window-maximize', () => windowManager.toggleMaximize());
-ipcMain.handle('window-close', () => windowManager.close());
-ipcMain.handle('window-is-maximized', () => windowManager.isMaximized());
-ipcMain.handle('window-get-bounds', () => windowManager.getBounds());
-ipcMain.handle('window-start-resize', () => windowManager.startResize());
-ipcMain.handle('window-toggle-fullscreen', () => windowManager.toggleFullscreen());
-ipcMain.handle('window-exit-fullscreen', () => windowManager.exitFullscreen());
-ipcMain.handle('window-is-fullscreen', () => windowManager.isFullscreen());
-ipcMain.on('window-set-bounds', (_event, bounds) => windowManager.setBounds(bounds));
+function assertTrustedSender(event){const win=activeWindow();const expected=pathToFileURL(path.join(__dirname,'..','index.html'));let actual;try{actual=new URL(event.senderFrame?.url||'');}catch{throw new Error('Untrusted IPC sender.');}if(!win||event.sender!==win.webContents||event.senderFrame!==win.webContents.mainFrame||actual.protocol!==expected.protocol||actual.pathname!==expected.pathname)throw new Error('Untrusted IPC sender.');}
+function safeHandle(channel,handler){ipcMain.handle(channel,(event,...args)=>{assertTrustedSender(event);return handler(event,...args);});}
 
-ipcMain.handle('get-app-path', (_event, name) => {
+safeHandle('get-app-version', () => app.getVersion());
+safeHandle('window-minimize', () => windowManager.minimize());
+safeHandle('window-maximize', () => windowManager.toggleMaximize());
+safeHandle('window-close', () => windowManager.close());
+safeHandle('window-is-maximized', () => windowManager.isMaximized());
+safeHandle('window-get-bounds', () => windowManager.getBounds());
+safeHandle('window-start-resize', () => windowManager.startResize());
+safeHandle('window-toggle-fullscreen', () => windowManager.toggleFullscreen());
+safeHandle('window-exit-fullscreen', () => windowManager.exitFullscreen());
+safeHandle('window-is-fullscreen', () => windowManager.isFullscreen());
+ipcMain.on('window-set-bounds', (event, bounds) => {try{assertTrustedSender(event);windowManager.setBounds(bounds);}catch(error){console.warn('Rejected window request:',error.message);}});
+
+safeHandle('get-app-path', (_event, name) => {
   const allowed = new Set(['home', 'appData', 'userData', 'documents', 'downloads', 'desktop']);
   if (!allowed.has(name)) throw new Error('Invalid app path');
   return app.getPath(name);
 });
 
-ipcMain.handle('dialog-open-file', async () => {
+safeHandle('dialog-open-file', async () => {
   const win = activeWindow();
   if (!win) return null;
   const result = await dialog.showOpenDialog(win, {
@@ -116,7 +124,7 @@ ipcMain.handle('dialog-open-file', async () => {
   return allowPath(authorizedReadPaths, result.filePaths[0]);
 });
 
-ipcMain.handle('dialog-save-file', async (_event, options = {}) => {
+safeHandle('dialog-save-file', async (_event, options = {}) => {
   const win = activeWindow();
   if (!win) return null;
   const result = await dialog.showSaveDialog(win, {
@@ -128,7 +136,7 @@ ipcMain.handle('dialog-save-file', async (_event, options = {}) => {
   return allowPath(authorizedWritePaths, result.filePath);
 });
 
-ipcMain.handle('dialog-select-folder', async () => {
+safeHandle('dialog-select-folder', async () => {
   const win = activeWindow();
   if (!win) return null;
   const result = await dialog.showOpenDialog(win, {
@@ -138,7 +146,7 @@ ipcMain.handle('dialog-select-folder', async () => {
   return result.canceled ? null : (result.filePaths[0] || null);
 });
 
-ipcMain.handle('file-read', async (_event, filePath) => {
+safeHandle('file-read', async (_event, filePath) => {
   const selectedPath = consumeAuthorizedPath(authorizedReadPaths, filePath);
   if (!isJsonBackupPath(selectedPath)) throw new Error('ASCEND backups must be JSON files.');
   const stat = await fs.stat(selectedPath);
@@ -146,7 +154,7 @@ ipcMain.handle('file-read', async (_event, filePath) => {
   return fs.readFile(selectedPath, 'utf8');
 });
 
-ipcMain.handle('file-write', async (_event, payload) => {
+safeHandle('file-write', async (_event, payload) => {
   if (!payload || typeof payload !== 'object' || typeof payload.data !== 'string') {
     throw new Error('Invalid ASCEND backup payload.');
   }
@@ -180,8 +188,8 @@ autoUpdater.on('error', (error) => {
   updaterEvent('error', { message });
 });
 
-ipcMain.handle('updater-check-for-updates', checkForUpdates);
-ipcMain.handle('updater-quit-and-install', () => {
+safeHandle('updater-check-for-updates', checkForUpdates);
+safeHandle('updater-quit-and-install', () => {
   if (!updateReadyToInstall) return false;
   autoUpdater.quitAndInstall();
   return true;
@@ -189,7 +197,7 @@ ipcMain.handle('updater-quit-and-install', () => {
 
 app.whenReady().then(() => {
   windowManager.create();
-  globalShortcut.register('F11', () => windowManager.toggleFullscreen());
+  activeWindow().webContents.on('before-input-event',(event,input)=>{if(input.type==='keyDown'&&input.key==='F11'){event.preventDefault();windowManager.toggleFullscreen();}});
   if (app.isPackaged) setTimeout(() => { checkForUpdates(); }, 5000);
 
   app.on('activate', () => {

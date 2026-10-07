@@ -1,20 +1,24 @@
 {
   "name": "ascend-journal",
   "productName": "ASCEND Journal",
-  "version": "1.8.2",
+  "version": "3.0.0",
   "private": true,
-  "description": "ASCEND Journal v1.8 design-consolidation desktop build and automated quality gate.",
+  "description": "ASCEND Journal: private trading journal, import validation, cloud sync and review workspace.",
   "main": "electron/main.js",
   "author": "Simon",
   "license": "ISC",
   "type": "commonjs",
   "scripts": {
     "start": "electron .",
-    "build:win": "electron-builder --win nsis",
+    "build:win": "electron-builder --win nsis --x64 --publish never",
     "build": "pnpm run build:win",
+    "verify:win-artifacts": "node scripts/verify-windows-release-artifacts.js",
+    "release:win:gate": "pnpm run build:win && pnpm run verify:win-artifacts",
     "test:electron:syntax": "node --check electron/main.js && node --check electron/preload.js && node --check electron/window-manager.js",
     "migrations:check": "node scripts/check-migrations.js",
     "migrations:status": "node scripts/migration-status.js",
+    "source:package": "node scripts/create-source-delivery.js",
+    "source:verify": "node scripts/create-source-delivery.js",
     "test:syntax": "node extract_script.js && node --check app.js",
     "test:unit": "node --test tests/unit/*.test.js",
     "test:integration": "node --test tests/integration/*.test.js",
@@ -55,10 +59,16 @@
       "electron/**/*",
       "build/icon.png",
       "build/icon.ico",
-      "package.json"
+      "package.json",
+      "manifest.webmanifest",
+      "sw.js",
+      "vendor/**/*",
+      "icons/**/*"
     ],
     "win": {
-      "target": ["nsis"],
+      "target": [
+        "nsis"
+      ],
       "icon": "build/icon.ico",
       "artifactName": "ASCEND-Journal-Setup-${version}.${ext}"
     },

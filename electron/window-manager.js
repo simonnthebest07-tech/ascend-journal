@@ -14,6 +14,30 @@ function finiteNumber(value) {
   return typeof value === 'number' && Number.isFinite(value);
 }
 
+function rectsIntersect(a, b) {
+  return a.x < b.x + b.width && a.x + a.width > b.x && a.y < b.y + b.height && a.y + a.height > b.y;
+}
+
+function recoveredWindowBounds(savedState) {
+  const primary = screen.getPrimaryDisplay().workArea;
+  const width = Math.min(primary.width, Math.max(MIN_WIDTH, Math.round(savedState.width || DEFAULT_WIDTH)));
+  const height = Math.min(primary.height, Math.max(MIN_HEIGHT, Math.round(savedState.height || DEFAULT_HEIGHT)));
+  const candidate = {
+    x: finiteNumber(savedState.x) ? Math.round(savedState.x) : primary.x + Math.round((primary.width - width) / 2),
+    y: finiteNumber(savedState.y) ? Math.round(savedState.y) : primary.y + Math.round((primary.height - height) / 2),
+    width,
+    height,
+  };
+  const visible = screen.getAllDisplays().some(display => rectsIntersect(candidate, display.workArea));
+  if (visible) return candidate;
+  return {
+    x: primary.x + Math.round((primary.width - width) / 2),
+    y: primary.y + Math.round((primary.height - height) / 2),
+    width,
+    height,
+  };
+}
+
 class WindowManager {
   constructor() {
     this.window = null;
@@ -37,18 +61,21 @@ class WindowManager {
     });
 
     const iconFile = process.platform === 'win32' ? 'icon.ico' : 'icon.png';
+    const initialBounds = recoveredWindowBounds(savedState);
     const win = new BrowserWindow({
-      x: savedState.x,
-      y: savedState.y,
-      width: Math.max(MIN_WIDTH, savedState.width || DEFAULT_WIDTH),
-      height: Math.max(MIN_HEIGHT, savedState.height || DEFAULT_HEIGHT),
+      x: initialBounds.x,
+      y: initialBounds.y,
+      width: initialBounds.width,
+      height: initialBounds.height,
       minWidth: MIN_WIDTH,
       minHeight: MIN_HEIGHT,
       icon: path.join(__dirname, '..', 'build', iconFile),
       show: false,
-      frame: false,
+      frame: true,
+      titleBarStyle: 'hidden',
+      titleBarOverlay: {color:'#000000',symbolColor:'#fafafa',height:42},
       title: 'ASCEND Journal',
-      backgroundColor: '#edf2f6',
+      backgroundColor: '#000000',
       webPreferences: {
         preload: path.join(__dirname, 'preload.js'),
         contextIsolation: true,
@@ -82,7 +109,7 @@ class WindowManager {
     });
 
     win.webContents.on('will-navigate', (event, url) => {
-      if (!String(url || '').startsWith('file://')) event.preventDefault();
+      const expected=pathToFileURL(path.join(__dirname,'..','index.html'));let target;try{target=new URL(url);}catch{}if(!target||target.protocol!==expected.protocol||target.pathname!==expected.pathname)event.preventDefault();
     });
 
     win.webContents.on('render-process-gone', (_event, details) => {
@@ -178,3 +205,5 @@ class WindowManager {
 }
 
 module.exports = WindowManager;
+module.exports.recoveredWindowBounds = recoveredWindowBounds;
+module.exports.rectsIntersect = rectsIntersect;

@@ -1,0 +1,19 @@
+{
+  "id": "./ascend-index.html",
+  "name": "ASCEND Journal",
+  "short_name": "ASCEND",
+  "description": "Your private trading journal",
+  "start_url": "./ascend-index.html#/dashboard",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#000000",
+  "icons": [
+    {
+      "src": "./icons/icon-1024.png",
+      "sizes": "2048x2048",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
