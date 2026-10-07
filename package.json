@@ -1,7 +1,7 @@
 {
   "name": "ascend-journal",
   "productName": "ASCEND Journal",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "private": true,
   "description": "ASCEND Journal: private trading journal, import validation, cloud sync and review workspace.",
   "main": "electron/main.js",

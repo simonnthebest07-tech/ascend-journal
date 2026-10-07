@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="Content-Security-Policy"
-    content="default-src 'self'; base-uri 'self'; object-src 'none'; frame-src 'none'; script-src 'self' 'sha256-z1Kf6JgMvm8t0+OTDs+WNS7T09cSM7Z2Dk+Sf4m5S58=' 'sha256-hil8n2fNzgwxtPaUWXB5QJ8MqIO89Muo8FJDLvGwMns=' 'sha256-hCYxFOsZ5mWWEiDeg9fmVsZ9Ze2AgBjX86D09ON0WKs=' 'sha256-5l8Qxuyreq/5+lA3Fjis6T5ZijY8PLFC6EVjQ3e1ePE=' 'sha256-n6R0IBuZMOkmzfmuei90rzSAgRYAtPeE0tm0hKnagco=' 'sha256-kb7ndaBEBHlPl/UqsECyYH9m05f3ZhHxBWTQvOnRF0I=' 'sha256-2LQArtL9NYFePnst7OznVE40AGcLWeHKYxa2G55UXXE='; script-src-elem 'self' 'sha256-z1Kf6JgMvm8t0+OTDs+WNS7T09cSM7Z2Dk+Sf4m5S58=' 'sha256-hil8n2fNzgwxtPaUWXB5QJ8MqIO89Muo8FJDLvGwMns=' 'sha256-hCYxFOsZ5mWWEiDeg9fmVsZ9Ze2AgBjX86D09ON0WKs=' 'sha256-5l8Qxuyreq/5+lA3Fjis6T5ZijY8PLFC6EVjQ3e1ePE=' 'sha256-n6R0IBuZMOkmzfmuei90rzSAgRYAtPeE0tm0hKnagco=' 'sha256-kb7ndaBEBHlPl/UqsECyYH9m05f3ZhHxBWTQvOnRF0I=' 'sha256-2LQArtL9NYFePnst7OznVE40AGcLWeHKYxa2G55UXXE='; script-src-attr 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://api.fontshare.com https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com https://*.fontshare.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' https://stldczwjifswmaahfhjl.supabase.co wss://stldczwjifswmaahfhjl.supabase.co; worker-src 'self' blob:;">
+    content="default-src 'self'; base-uri 'self'; object-src 'none'; frame-src 'none'; script-src 'self' 'sha256-z1Kf6JgMvm8t0+OTDs+WNS7T09cSM7Z2Dk+Sf4m5S58=' 'sha256-ltapkBVGvYp5b94k3BYizOcuhapXOj0TfNXmNr/sXQc=' 'sha256-hil8n2fNzgwxtPaUWXB5QJ8MqIO89Muo8FJDLvGwMns=' 'sha256-pQWDoxbIgUOecAQ3tv0gjJ30aEdYE16dPy707TkPNv8=' 'sha256-5l8Qxuyreq/5+lA3Fjis6T5ZijY8PLFC6EVjQ3e1ePE=' 'sha256-n6R0IBuZMOkmzfmuei90rzSAgRYAtPeE0tm0hKnagco=' 'sha256-kb7ndaBEBHlPl/UqsECyYH9m05f3ZhHxBWTQvOnRF0I=' 'sha256-2LQArtL9NYFePnst7OznVE40AGcLWeHKYxa2G55UXXE='; script-src-elem 'self' 'sha256-z1Kf6JgMvm8t0+OTDs+WNS7T09cSM7Z2Dk+Sf4m5S58=' 'sha256-ltapkBVGvYp5b94k3BYizOcuhapXOj0TfNXmNr/sXQc=' 'sha256-hil8n2fNzgwxtPaUWXB5QJ8MqIO89Muo8FJDLvGwMns=' 'sha256-pQWDoxbIgUOecAQ3tv0gjJ30aEdYE16dPy707TkPNv8=' 'sha256-5l8Qxuyreq/5+lA3Fjis6T5ZijY8PLFC6EVjQ3e1ePE=' 'sha256-n6R0IBuZMOkmzfmuei90rzSAgRYAtPeE0tm0hKnagco=' 'sha256-kb7ndaBEBHlPl/UqsECyYH9m05f3ZhHxBWTQvOnRF0I=' 'sha256-2LQArtL9NYFePnst7OznVE40AGcLWeHKYxa2G55UXXE='; script-src-attr 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://api.fontshare.com https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com https://*.fontshare.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' https://stldczwjifswmaahfhjl.supabase.co wss://stldczwjifswmaahfhjl.supabase.co; worker-src 'self' blob:;">
   <meta name="referrer" content="strict-origin-when-cross-origin">
   <meta name="theme-color" content="#050608">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -21712,9 +21712,45 @@ body.asc-session-intro #page-content{animation:asc-motion-canvas var(--motion-st
 
 @keyframes asc-motion-canvas{from{opacity:.85}to{opacity:1}}
 
+/* Launch uses the same black identity surface and Inter typography as the existing intro. */
+html body > #asc-launch-splash{position:fixed;inset:var(--window-chrome-offset,0px) 0 0;z-index:2147483100;display:grid!important;visibility:visible!important;place-items:center;background:#000;color:#fafafa;font-family:Inter,Arial,sans-serif;isolation:isolate}
+#asc-launch-splash .asc-launch-identity{display:flex;flex-direction:column;align-items:center;text-align:center;animation:asc-motion-identity var(--motion-intro) var(--ease-emphasized) both}
+#asc-launch-splash .asc-launch-mark{width:48px;height:48px;display:grid;place-items:center;background:#fafafa;color:#000;border-radius:11px;margin-bottom:24px}
+#asc-launch-splash svg{width:36px;height:36px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+#asc-launch-splash svg path{stroke-dasharray:1;animation:asc-launch-draw var(--motion-intro) var(--ease-emphasized) both}
+#asc-launch-splash h1{font-size:24px;font-weight:500;letter-spacing:.12em;line-height:1.2;margin:0 0 8px;padding-left:.12em;color:#fafafa}
+#asc-launch-splash p{font-size:13px;font-weight:400;color:#8a8a8a;margin:0;line-height:1.5}
+#asc-launch-splash .asc-launch-divider{height:1px;width:32px;background:#262626;margin:22px auto 0;transform-origin:center;animation:asc-launch-line var(--motion-intro) var(--ease-enter) both}
+#asc-launch-splash button{position:absolute;bottom:max(28px,env(safe-area-inset-bottom));right:28px;min-height:44px;padding:0 12px;border:0;border-radius:6px;background:transparent;color:#8a8a8a;font:500 12px Inter,Arial,sans-serif;cursor:pointer;transition:color var(--motion-instant) var(--ease-standard)}
+#asc-launch-splash button:hover{color:#fafafa}#asc-launch-splash button:focus-visible{outline:1px solid #fff;outline-offset:2px}
+#asc-launch-splash.is-leaving{opacity:0;transition:opacity var(--motion-fast) var(--ease-exit)}
+html.asc-launching #asc-screen-lock .asc-lock-center,html.asc-launching #auth-screen .auth-card{animation-play-state:paused!important}
+@keyframes asc-launch-draw{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
+@keyframes asc-launch-line{from{opacity:0;transform:scaleX(.5)}to{opacity:1;transform:scaleX(1)}}
+/* Feedback stays local; static cards and financial values remain still. */
+html[data-theme] body #app :is(.btn,.profile-trigger,.am-select):active:not(:disabled){scale:.98}
+html[data-theme] body #app :is(.tp-tabs button,.ld-lenses button,.modal-tab){transition:background-color var(--motion-fast) var(--ease-standard),color var(--motion-fast) var(--ease-standard),border-color var(--motion-fast) var(--ease-standard),scale var(--motion-instant) var(--ease-standard)}
+html[data-theme] body #app :is(.tp-tabs button,.ld-lenses button,.modal-tab):active:not(:disabled){scale:.985}
+html[data-theme] body #topbar{box-shadow:none}html.asc-content-scrolled body #topbar{box-shadow:0 1px 0 var(--border-subtle,#1f1f1f)}
+#asc-screen-lock .asc-pin-digits input.is-filled{animation:asc-motion-digit var(--motion-fast) var(--ease-enter)}
+@keyframes asc-motion-digit{from{scale:.96}to{scale:1}}
+@media(prefers-reduced-motion:reduce){#asc-launch-splash *,#asc-launch-splash{animation:none!important;transition:none!important}html[data-theme] body #app :is(.btn,.profile-trigger,.am-select,.tp-tabs button,.ld-lenses button,.modal-tab):active:not(:disabled){scale:1!important}}
+
+.asc-first-use{width:min(560px,calc(100vw - 32px))!important;max-width:560px!important}
+.asc-guide-content{min-height:350px;color:var(--text-primary,#fafafa)}
+.asc-guide-progress{display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--text-muted,#8a8a8a);margin-bottom:22px;font-variant-numeric:tabular-nums}
+.asc-guide-dots{display:flex;gap:5px}.asc-guide-dots i{width:16px;height:3px;background:var(--border-subtle,#262626);border-radius:2px}.asc-guide-dots .is-current{background:var(--text-primary,#fafafa)}
+.asc-guide-icon{display:grid;place-items:center;width:42px;height:42px;border:1px solid var(--border-subtle,#262626);border-radius:10px;margin-bottom:16px;background:var(--surface-2,#141414)}
+.asc-guide-content h2{font-size:22px!important;font-weight:500;line-height:1.25;letter-spacing:-.5px;margin:0 0 10px!important}
+.asc-guide-lead{font-size:14px;line-height:1.6;color:var(--text-secondary,#8a8a8a);margin:0 0 20px}
+.asc-guide-points{display:grid;gap:10px}.asc-guide-points section{border:1px solid var(--border-subtle,#262626);border-radius:9px;padding:13px 14px}
+.asc-guide-points h3{font-size:13px!important;font-weight:500;margin:0 0 5px!important}.asc-guide-points p{font-size:13px;line-height:1.6;color:var(--text-secondary,#8a8a8a);margin:0}
+.asc-guide-actions{display:flex;gap:8px;margin-left:auto}.asc-first-use .modal-footer{display:flex;flex-wrap:wrap;gap:8px}.asc-first-use .modal-footer .btn{min-height:40px}
+@media(max-width:759px){.asc-first-use{width:calc(100vw - 24px)!important}.asc-guide-content{min-height:0}.asc-guide-content h2{font-size:20px!important}.asc-guide-progress{margin-bottom:16px}.asc-guide-points section{padding:11px 12px}.asc-first-use .modal-footer .btn{min-height:44px}.asc-first-use .modal-body{padding:18px!important}}
+
 /* Screen lock is always black, independent of the journal theme. */
-body.asc-screen-locked>*:not(#asc-screen-lock):not(script):not(style){display:none!important;visibility:hidden!important}
-body.asc-auth-private>*:not(#auth-screen):not(script):not(style){display:none!important;visibility:hidden!important}
+body.asc-screen-locked>*:not(#asc-screen-lock):not(#asc-launch-splash):not(script):not(style){display:none!important;visibility:hidden!important}
+body.asc-auth-private>*:not(#auth-screen):not(#asc-launch-splash):not(script):not(style){display:none!important;visibility:hidden!important}
 #asc-screen-lock[hidden]{display:none!important}
 #asc-screen-lock{position:fixed!important;inset:0!important;z-index:2147483000!important;background:#000!important;color:#fff!important;display:flex!important;align-items:center!important;justify-content:center!important;padding:32px 20px!important;overflow:auto!important;font-family:Inter,Arial,sans-serif!important;box-sizing:border-box!important}
 #asc-screen-lock .asc-lock-center{width:100%;max-width:340px;text-align:center;margin:auto}
@@ -21988,6 +22024,65 @@ html[data-theme] body.ascend-electron.ascend-native-caption #ascend-titlebar{pad
 </head>
 
 <body class="ascend-phase4 ascend-20 ascend-spatial-v5 ascend-2 an-handoff" data-shell-owner="canonical">
+<div id="asc-launch-splash" tabindex="-1" role="dialog" aria-modal="true" aria-label="Opening ASCEND"><div class="asc-launch-identity"><span class="asc-launch-mark"><svg class="ascend-mark" viewBox="0 0 32 32" aria-hidden="true">
+            <path pathLength="1" d="M8 23 16 7l8 16-8-4-8 4Z" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linejoin="round" />
+            <path pathLength="1" d="M12 21h8" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+          </svg></span><h1>ASCEND</h1><p>Trading journal</p><span class="asc-launch-divider" aria-hidden="true"></span></div><button type="button" aria-label="Skip launch introduction">Skip intro</button></div><script id="asc-launch-runtime">(function () {
+  'use strict';
+  const root = document.getElementById('asc-launch-splash');
+  if (!root) return;
+  const html = document.documentElement, button = root.querySelector('button');
+  const media = window.matchMedia('(prefers-reduced-motion: reduce)');
+  let resolve, finished = false, exiting = false, timer, safety, fadeTimer, pendingFocus, firstFrame, secondFrame;
+  const launch = window.__ascendLaunch = { active: true, ready: new Promise(r => resolve = r), dismiss };
+  html.classList.add('asc-launching');
+  function finish() {
+    if (finished) return;
+    finished = true; launch.active = false;
+    clearTimeout(timer); clearTimeout(safety); clearTimeout(fadeTimer);
+    cancelAnimationFrame(firstFrame); cancelAnimationFrame(secondFrame);
+    document.removeEventListener('keydown', onKey, true);
+    document.removeEventListener('focusin', onFocus, true);
+    root.removeEventListener?.('click', onClick);
+    media.removeEventListener?.('change', onPreference);
+    root.remove(); html.classList.remove('asc-launching');
+    const target = pendingFocus?.isConnected && !pendingFocus.closest('[hidden],[inert]') ? pendingFocus : document.querySelector('#asc-screen-lock:not([hidden]) input:not(:disabled), #auth-screen input, #page-content');
+    target?.focus({ preventScroll: true });
+    resolve();
+  }
+  function dismiss(immediate = false) {
+    if (finished) return;
+    if (immediate || media.matches) { finish(); return; }
+    if (exiting) return;
+    exiting = true; clearTimeout(timer);
+    root.classList.add('is-leaving');
+    const raw = getComputedStyle(html).getPropertyValue('--motion-fast');
+    fadeTimer = setTimeout(finish, parseFloat(raw) || 160);
+  }
+  function onKey(event) {
+    if (!launch.active) return;
+    event.preventDefault(); event.stopImmediatePropagation();
+    if (event.key === 'Tab') button.focus({ preventScroll: true });
+    else dismiss(true); // First key skips; it cannot submit a covered login/PIN form.
+  }
+  function onFocus(event) {
+    if (launch.active && !root.contains(event.target)) { pendingFocus = event.target; root.focus({ preventScroll: true }); }
+  }
+  function onClick(event) { event.preventDefault(); event.stopPropagation(); dismiss(true); }
+  function onPreference() { if (media.matches) dismiss(true); }
+  document.addEventListener('keydown', onKey, true);
+  document.addEventListener('focusin', onFocus, true);
+  root.addEventListener?.('click', onClick);
+  media.addEventListener?.('change', onPreference);
+  root.focus({ preventScroll: true });
+  // Identity reveal only: no simulated progress and no wait for network or data.
+  firstFrame = requestAnimationFrame(() => { secondFrame = requestAnimationFrame(() => {
+    if (!finished && !exiting) timer = setTimeout(() => dismiss(), media.matches ? 0 : 900);
+  }); });
+  safety = setTimeout(() => dismiss(true), 1800);
+})();
+</script>
  <script>if (window.ascend && window.ascend.isElectron) document.body.classList.add('ascend-electron');</script>
   <!-- Pre-paint handoff guard. `an-handoff` is present from parse time, so the legacy
        authenticated chrome never paints during the window between showAppShell() and the
@@ -22252,7 +22347,7 @@ html[data-theme] body.ascend-electron.ascend-native-caption #ascend-titlebar{pad
     // ===================== CONSTANTS =====================
     // Single source of truth for the app version shown in the UI (Settings → Updates, etc).
     // Do not hardcode a version string anywhere else — reference ASCEND_APP_VERSION instead.
-    const ASCEND_APP_VERSION = '3.0.0';
+    const ASCEND_APP_VERSION = '3.0.1';
     // Rank 5 client-side migration registry. The canonical production ledger and SQL
     // checksums live in migrations/; this runtime map makes local cache compatibility
     // explicit without exposing or querying Supabase's internal migration ledger.
@@ -25879,7 +25974,7 @@ html[data-theme] body.ascend-electron.ascend-native-caption #ascend-titlebar{pad
       play(el,frames,name='fast',ease='enter'){if(!el||this.reduced()||typeof el.animate!=='function')return Promise.resolve();this.cancel(el);const animation=el.animate(frames,{duration:this.duration(name),easing:this.ease(ease),fill:'none'});return animation.finished.catch(()=>{});},
       show(el){if(!el)return;el._motionEpoch=(el._motionEpoch||0)+1;this.cancel(el);el.hidden=false;el.inert=false;el.removeAttribute('aria-hidden');el.style.pointerEvents='';this.play(el,[{opacity:0,translate:'0px 2px',scale:.985},{opacity:1,translate:'0px 0px',scale:1}]);},
       hide(el){if(!el)return;const epoch=el._motionEpoch=(el._motionEpoch||0)+1;el.inert=true;el.setAttribute('aria-hidden','true');el.style.pointerEvents='none';this.play(el,[{opacity:1},{opacity:0}],'fast','exit').then(()=>{if(el._motionEpoch===epoch){el.hidden=true;el.inert=false;el.removeAttribute('aria-hidden');el.style.pointerEvents='';}});},
-      enter(el,kind='content'){const mobile=matchMedia('(max-width:759px)').matches;return this.play(el,kind==='drawer'?[{opacity:.8,translate:mobile?'0px 24px':'24px 0px'},{opacity:1,translate:'0px 0px',scale:1}]:[{opacity:.85},{opacity:1}],kind==='drawer'?'standard':'fast');},
+      enter(el,kind='content'){const mobile=matchMedia('(max-width:759px)').matches;return this.play(el,kind==='drawer'?[{opacity:.8,translate:mobile?'0px 24px':'24px 0px'},{opacity:1,translate:'0px 0px',scale:1}]:[{opacity:.85,translate:'0px 3px'},{opacity:1,translate:'0px 0px'}],kind==='drawer'?'standard':'fast');},
       retire(el,kind='popover',done){if(!el)return;el.classList.add('asc-motion-retiring');el.inert=true;el.setAttribute('aria-hidden','true');el.style.pointerEvents='none';if(typeof syncModalLayers==='function'&&el.matches?.('[data-production-trade-detail],.overlay,#asc-chart-viewer'))syncModalLayers();const mobile=matchMedia('(max-width:759px)').matches,frames=kind==='drawer'?[{opacity:1,translate:'0px 0px'},{opacity:0,translate:mobile?'0px 16px':'16px 0px'}]:[{opacity:1,translate:'0px 0px',scale:1},{opacity:0,translate:kind==='sheet'?'0px 12px':'0px 2px',scale:kind==='sheet'?1:.99}];const target=kind==='drawer'?el.querySelector('.asc-production-detail-panel')||el:kind==='modal'?el.querySelector('.modal')||el:el;this.play(target,frames,'fast','exit').then(()=>{el.remove();done?.();});},
       pause(ms){return this.reduced()?Promise.resolve():new Promise(resolve=>setTimeout(resolve,ms));},
       restore(target){const app=document.getElementById('app');const valid=target?.isConnected&&app?.contains(target)&&!target.closest('[hidden],[inert],.asc-motion-retiring');(valid?target:document.getElementById('page-content'))?.focus({preventScroll:true});}
@@ -26468,9 +26563,9 @@ SOFTWARE.
     function tpLanguageMenu(anchor) { QuickCreate.open(anchor,[{label:'English · Current language',icon:'check',action:()=>toast('ASCEND currently supports English.')}]); }
     function renderSettingsLink() {
       const el=document.getElementById('rail-settings-link');if(!el)return;const name=State.db?.settings?.name||'Trader';
-      el.innerHTML='<button type="button" class="profile-trigger" aria-label="User profile" aria-expanded="false" aria-controls="profile-menu"><span class="profile-avatar">'+esc(name.slice(0,1).toUpperCase())+'</span><span class="profile-copy"><b>'+esc(name)+'</b><small>'+esc(CURRENT_USER_EMAIL||'Personal workspace')+'</small></span><span class="tp-ellipsis">•••</span></button><div id="profile-menu" class="profile-menu" role="menu" hidden><button role="menuitem" data-profile-settings>'+icon('gear',14)+'Settings</button><button role="menuitem" data-profile-language aria-haspopup="menu">'+icon('globe',14)+'Language '+icon('arrowRight',14)+'</button><button role="menuitem" data-profile-help>'+icon('book',14)+'Help Center</button><button role="menuitem" data-profile-lock>'+icon('lock',14)+'Lock <small>⌘/Ctrl ⇧ L</small></button><hr><button role="menuitem" class="neg" data-profile-logout>'+icon('logout',14)+'Logout</button></div>';
+      el.innerHTML='<button type="button" class="profile-trigger" aria-label="User profile" aria-expanded="false" aria-controls="profile-menu"><span class="profile-avatar">'+esc(name.slice(0,1).toUpperCase())+'</span><span class="profile-copy"><b>'+esc(name)+'</b><small>'+esc(CURRENT_USER_EMAIL||'Personal workspace')+'</small></span><span class="tp-ellipsis">•••</span></button><div id="profile-menu" class="profile-menu" role="menu" hidden><button role="menuitem" data-profile-settings>'+icon('gear',14)+'Settings</button><button role="menuitem" data-profile-language aria-haspopup="menu">'+icon('globe',14)+'Language '+icon('arrowRight',14)+'</button><button role="menuitem" data-profile-tutorial>'+icon('book',14)+'Getting started</button><button role="menuitem" data-profile-help>'+icon('book',14)+'Help Center</button><button role="menuitem" data-profile-lock>'+icon('lock',14)+'Lock <small>⌘/Ctrl ⇧ L</small></button><hr><button role="menuitem" class="neg" data-profile-logout>'+icon('logout',14)+'Logout</button></div>';
       const trigger=el.querySelector('.profile-trigger'),menu=el.querySelector('#profile-menu'),close=()=>{Motion.hide(menu);trigger.setAttribute('aria-expanded','false');};trigger.onclick=()=>{const open=trigger.getAttribute('aria-expanded')!=='true';if(open)Motion.show(menu);else Motion.hide(menu);trigger.setAttribute('aria-expanded',String(open));if(open)menu.querySelector('button').focus();};
-      const go=r=>{close();location.hash=r;Sidebar.close();};el.querySelector('[data-profile-settings]').onclick=()=>go('#/settings');el.querySelector('[data-profile-language]').onclick=e=>{close();tpLanguageMenu(trigger);};el.querySelector('[data-profile-help]').onclick=()=>go('#/settings/application');el.querySelector('[data-profile-lock]').onclick=()=>{close();ScreenLock.restoreFocus=trigger;Sidebar.close();ScreenLock.lock();};el.querySelector('[data-profile-logout]').onclick=()=>{close();Auth.signOut();};
+      const go=r=>{close();location.hash=r;Sidebar.close();};el.querySelector('[data-profile-settings]').onclick=()=>go('#/settings');el.querySelector('[data-profile-language]').onclick=e=>{close();tpLanguageMenu(trigger);};el.querySelector('[data-profile-tutorial]').onclick=()=>{close();Sidebar.close();FirstUseGuide.open();};el.querySelector('[data-profile-help]').onclick=()=>go('#/settings/application');el.querySelector('[data-profile-lock]').onclick=()=>{close();ScreenLock.restoreFocus=trigger;Sidebar.close();ScreenLock.lock();};el.querySelector('[data-profile-logout]').onclick=()=>{close();Auth.signOut();};
       el._profileAbort?.abort();el._profileAbort=new AbortController();document.addEventListener('pointerdown',e=>{if(!el.contains(e.target))close();},{signal:el._profileAbort.signal});el.onkeydown=e=>{if(e.key==='Escape'){close();trigger.focus();return;}if(menu.hidden)return;const list=[...menu.querySelectorAll('button')],i=list.indexOf(document.activeElement);let n=e.key==='ArrowDown'?(i+1)%list.length:e.key==='ArrowUp'?(i-1+list.length)%list.length:e.key==='Home'?0:e.key==='End'?list.length-1:null;if(n!==null){e.preventDefault();list[n].focus();}};
       let context=document.getElementById('tp-rail-context');if(!context){context=document.createElement('section');context.id='tp-rail-context';context.className='tp-rail-context';context.setAttribute('aria-label','Workspace sync');el.before(context);}tpObserveSyncCard();
     }
@@ -30819,32 +30914,50 @@ const ImportEngineWorkerSource="    const ImportEngine = (() => {\n      functio
     }
 
     // ===================== FIRST-RUN ONBOARDING =====================
-    function maybeShowOnboarding() {
-      if (State.db.settings.onboarded) return;
-      const s = State.db.settings;
-      Modal.open({
-        title: 'Welcome to ASCEND', bodyHTML: `
-      <p class="muted" style="font-size:13px;margin-top:0;">Build a better trading process. A couple of quick details to personalize your workspace — skip anytime.</p>
-      <div class="field"><label class="field-label">Name</label><input type="text" id="ob-name" placeholder="Your name"></div>
-      <div class="field-row">
-        <div class="field"><label class="field-label">Currency</label><select id="ob-currency"><option value="USD">USD</option><option value="EUR">EUR</option><option value="GBP">GBP</option></select></div>
-        <div class="field"><label class="field-label">Default Instrument</label><select id="ob-instr">${INSTRUMENTS.map(i => `<option ${i === 'XAUUSD' ? 'selected' : ''}>${i}</option>`).join('')}</select></div><div class="field"><label class="field-label" for="ob-trader-profile">What best describes your trading?</label><select id="ob-trader-profile"><option value="intraday_session">Intraday / session-based</option><option value="swing_position">Swing / position</option><option value="mechanical_algo">Mechanical / algo-assisted</option><option value="news_fundamental">News / fundamental</option><option value="mixed_discretionary">Mixed / discretionary</option></select><p class="hint">This only sets starting defaults. Every feature remains configurable later.</p></div>
-      </div>
-    `,
-        footerHTML: `<button class="btn" id="ob-skip">Skip Setup</button><button class="btn btn-primary" id="ob-finish">Finish</button>`,
-        onMount: (overlay, close) => {
-          const finish = () => {
-            s.name = overlay.querySelector('#ob-name').value.trim() || s.name;
-            s.currency = overlay.querySelector('#ob-currency').value;
-            s.defaultInstrument = overlay.querySelector('#ob-instr').value;
-            s.traderProfile = overlay.querySelector('#ob-trader-profile').value; if (['swing_position', 'mechanical_algo', 'news_fundamental'].includes(s.traderProfile)) s.tradeBySession = false;
-            s.onboarded = true; State.saveNow(); close(); renderNav(); router();
-          };
-          overlay.querySelector('#ob-finish').onclick = finish;
-          overlay.querySelector('#ob-skip').onclick = () => { s.onboarded = true; State.saveNow(); close(); };
+    const FirstUseGuide = {
+      steps: [
+        { icon:'book', title:'Your journal, your workspace', text:'ASCEND helps you record trades, understand your results, and build a repeatable process.', points:[['Your own account','Your journal follows your login across devices. Give each person their own ASCEND login.'],['Live or Backtest','Switch at the top right. Practice records stay separate from your live journal.']] },
+        { icon:'wallet', title:'Start with a trading account', text:'Add an account before your first trade so balances and results have the right context.', points:[['Accounts','Use the account control in the sidebar, then Manage accounts. Choose a name, currency, and initial balance.'],['Choose your scope','Select one account to focus, or All Accounts for an overview. ASCEND records your activity; it does not place broker orders.']] },
+        { icon:'plus', title:'Add trades your way', text:'Use New Trade for an individual entry, or Import for your trading history.', points:[['New Trade','Record the instrument, side, entry, risk, and strategy. Close an open trade when its outcome is known.'],['Import and evidence','Review the import preview before saving. Add screenshots and a short note to remember why you took the trade.']] },
+        { icon:'chart', title:'See what is working', text:'Go from an overview to the details without losing your place.', points:[['Dashboard & Analytics','Dashboard gives you the overview. Analytics helps you compare results and find patterns. Use the $ / % control to change how returns are displayed.'],['Trades & Calendar','Search and filter your ledger. Table shows the details, Timeline shows the sequence, Evidence shows your screenshots, and Calendar helps you review a day.']] },
+        { icon:'check', title:'Make a small routine', text:'A useful journal is one you can keep up with. Start simple and add detail when it helps.', points:[['Before → after → review','Use Journal to plan and reflect. Keep your strategy names consistent, then review one thing to repeat and one thing to improve.'],['Keep your work safe','Check the sync status in the sidebar. Saved locally and synced are different states; reconnect to send queued changes. Export a backup from Settings → Data.']] }
+      ],
+      pending:null, owner:null, layer:null,
+      queue(){if(State.db?.settings&&!State.db.settings.onboarded)this.pending={db:State.db,userId:CURRENT_USER_ID};},
+      cancel(){this.pending=null;},
+      tryOpen(){
+        const pending=this.pending;if(!pending)return;
+        if(pending.db!==State.db||pending.userId!==CURRENT_USER_ID||State.db.settings.onboarded){this.cancel();return;}
+        if(window.__ascendLaunch?.active||ScreenLock.locked||!ScreenLock.root().hidden)return;
+        this.cancel();this.open();
+      },
+      finish(close,accounts=false){
+        const owner=this.owner;
+        if(!owner||owner.db!==State.db||owner.userId!==CURRENT_USER_ID){close();return;}
+        if(!owner.db.settings.onboarded){
+          owner.db.settings.onboarded=true;
+          if(!State.saveNow({db:owner.db}).localSaved){owner.db.settings.onboarded=false;toast('Could not save your tutorial preference locally. You can still continue.','error');}
         }
-      });
-    }
+        close();if(accounts)location.hash='#/accounts';
+      },
+      open(){
+        if(!State.db?.settings||ScreenLock.locked||this.layer?.overlay?.isConnected)return;
+        this.owner={db:State.db,userId:CURRENT_USER_ID};let step=0;
+        this.layer=Modal.open({title:'Getting started',className:'asc-first-use',bodyHTML:'<section class="asc-guide-content" aria-label="ASCEND tutorial" aria-live="polite" aria-atomic="true"></section>',footerHTML:'<button class="btn" data-guide-skip>Skip tutorial</button><div class="asc-guide-actions"><button class="btn" data-guide-back>Back</button><button class="btn btn-primary" data-guide-next>Next</button></div>',onMount:(overlay,close)=>{
+          const content=overlay.querySelector('.asc-guide-content'),next=overlay.querySelector('[data-guide-next]'),back=overlay.querySelector('[data-guide-back]'),skip=overlay.querySelector('[data-guide-skip]');
+          const render=()=>{
+            const s=this.steps[step];content.innerHTML='<div class="asc-guide-progress"><span>Step '+(step+1)+' of '+this.steps.length+'</span><span class="asc-guide-dots" aria-hidden="true">'+this.steps.map((_,i)=>'<i class="'+(i===step?'is-current':'')+'"></i>').join('')+'</span></div><span class="asc-guide-icon" aria-hidden="true">'+icon(s.icon,22)+'</span><h2>'+esc(s.title)+'</h2><p class="asc-guide-lead">'+esc(s.text)+'</p><div class="asc-guide-points">'+s.points.map(([title,text])=>'<section><h3>'+esc(title)+'</h3><p>'+esc(text)+'</p></section>').join('')+'</div>';
+            back.disabled=step===0;next.textContent=step===this.steps.length-1?'Start exploring':'Next';skip.textContent=step===this.steps.length-1?'Go to Accounts':'Skip tutorial';Motion.enter(content);
+          };
+          next.onclick=()=>{if(step<this.steps.length-1){step++;render();}else this.finish(close);};
+          back.onclick=()=>{if(step>0){step--;render();}};
+          skip.onclick=()=>this.finish(close,step===this.steps.length-1);
+          render();
+        }});
+      }
+    };
+    function maybeShowOnboarding(){FirstUseGuide.queue();}
+
 
     // ===================== SIDEBAR (responsive) =====================
     const Sidebar = {
@@ -31072,6 +31185,7 @@ const ImportEngineWorkerSource="    const ImportEngine = (() => {\n      functio
         if(r)this.lock();
       },
       leave(){
+        FirstUseGuide.cancel();
         this.lockGeneration=(this.lockGeneration||0)+1;Motion.cancel(this.root());this.root().classList.remove('asc-intro-exiting');this.root().inert=false;this.root().style.pointerEvents='';this.root().removeAttribute('aria-hidden');this.finishIntro();clearInterval(this.countdown);this.countdown=null;this.locked=false;this.busy=false;this.userId=null;
         document.body.classList.remove('asc-screen-locked');this.root().hidden=true;
         const app=document.getElementById('app');if(app){app.inert=false;app.removeAttribute('aria-hidden');}
@@ -31110,7 +31224,7 @@ const ImportEngineWorkerSource="    const ImportEngine = (() => {\n      functio
         root.dataset.pinState='correct';const message=root.querySelector('.asc-lock-message');if(message)message.textContent='Unlocked';
         await Motion.pause(Motion.duration('fast'));if(owner!==this.userId||generation!==this.lockGeneration||!this.locked)return;
         this.locked=false;this.busy=false;this.lastActivity=Date.now();this.markIntro();document.body.classList.remove('asc-screen-locked');const app=document.getElementById('app');app.inert=false;app.removeAttribute('aria-hidden');root.inert=true;root.setAttribute('aria-hidden','true');root.style.pointerEvents='none';Motion.restore(this.restoreFocus);Motion.enter(pageContent());
-        await Motion.play(root,[{opacity:1},{opacity:0}],'fast','exit');if(owner===this.userId&&generation===this.lockGeneration&&!this.locked){root.hidden=true;root.inert=false;root.style.pointerEvents='';root.removeAttribute('aria-hidden');}
+        await Motion.play(root,[{opacity:1},{opacity:0}],'fast','exit');if(owner===this.userId&&generation===this.lockGeneration&&!this.locked){root.hidden=true;root.inert=false;root.style.pointerEvents='';root.removeAttribute('aria-hidden');FirstUseGuide.tryOpen();}
       },
       async forgot(){
         if(this.busy)return;this.busy=true;
@@ -31151,12 +31265,13 @@ const ImportEngineWorkerSource="    const ImportEngine = (() => {\n      functio
       hasSeenIntro(){try{return sessionStorage.getItem('ascend-intro:'+this.userId)==='1';}catch{return this.introPlayed;}},
       markIntro(){this.introPlayed=true;try{sessionStorage.setItem('ascend-intro:'+this.userId,'1');}catch{}},
       ready(){
-        if(!this.userId||this.hasSeenIntro())return;this.markIntro();if(Motion.reduced())return;
+        if(window.__ascendLaunch?.active){const owner=this.userId;window.__ascendLaunch.ready.then(()=>{if(this.userId===owner)this.ready();});return;}
+        if(!this.userId||this.hasSeenIntro()){FirstUseGuide.tryOpen();return;}this.markIntro();if(Motion.reduced()){FirstUseGuide.tryOpen();return;}
         if(this.locked){const center=this.root().querySelector('.asc-lock-center');center?.classList.add('asc-intro-lock');return;}
         const root=this.root();root.hidden=false;root.setAttribute('aria-label','ASCEND welcome');root.innerHTML='<div class="asc-lock-center asc-intro-welcome">'+this.logo()+'<h1>Welcome back, '+esc(State.db?.settings?.name||'Trader')+'</h1><p class="asc-lock-tagline">Your trading second brain</p><button class="asc-lock-link" data-skip-intro>Skip intro</button></div>';this.startIntro(()=>{},Motion.duration('intro')+Motion.duration('deliberate'),false);
       },
       startIntro(reveal,delay,unlock){
-        let done=false;const introOwner=this.userId,introGeneration=this.lockGeneration;const finish=(animate=true)=>{if(done)return;done=true;clearTimeout(this.introDelay);this.root().removeEventListener('click',skip);window.removeEventListener('keydown',skip,true);reveal();if(!this.locked)Motion.restore(this.restoreFocus);const root=this.root();if(animate&&!Motion.reduced()){root.classList.add('asc-intro-exiting');root.inert=true;setTimeout(()=>{if(!this.locked&&introOwner===this.userId&&introGeneration===this.lockGeneration){root.hidden=true;root.classList.remove('asc-intro-exiting');root.inert=false;}},Motion.duration('fast'));}else root.hidden=true;this.root().setAttribute('aria-label','ASCEND screen lock');if(animate)document.body.classList.add('asc-session-intro');this.introCleanup=setTimeout(()=>document.body.classList.remove('asc-session-intro'),Motion.duration('standard'));this.introFinish=null;};
+        let done=false;const introOwner=this.userId,introGeneration=this.lockGeneration;const finish=(animate=true)=>{if(done)return;done=true;clearTimeout(this.introDelay);this.root().removeEventListener('click',skip);window.removeEventListener('keydown',skip,true);reveal();if(!this.locked)Motion.restore(this.restoreFocus);const root=this.root();if(animate&&!Motion.reduced()){root.classList.add('asc-intro-exiting');root.inert=true;setTimeout(()=>{if(!this.locked&&introOwner===this.userId&&introGeneration===this.lockGeneration){root.hidden=true;root.classList.remove('asc-intro-exiting');root.inert=false;FirstUseGuide.tryOpen();}},Motion.duration('fast'));}else root.hidden=true;this.root().setAttribute('aria-label','ASCEND screen lock');if(animate)document.body.classList.add('asc-session-intro');this.introCleanup=setTimeout(()=>document.body.classList.remove('asc-session-intro'),Motion.duration('standard'));this.introFinish=null;FirstUseGuide.tryOpen();};
         const skip=e=>{e.preventDefault();e.stopImmediatePropagation();finish(false);};this.introFinish=finish;this.root().addEventListener('click',skip);window.addEventListener('keydown',skip,true);this.introDelay=setTimeout(finish,delay);
       },
       finishIntro(){this.introFinish?.();clearTimeout(this.introCleanup);document.body.classList.remove('asc-session-intro');},
@@ -31757,6 +31872,8 @@ const ImportEngineWorkerSource="    const ImportEngine = (() => {\n      functio
       Phase4Surface.wrap('settings', (host) => host.classList.add('asc-p4-settings-stage'));
     })();
 
+    // Passive scroll feedback; no polling, card observers, or financial text updates.
+    (()=>{let frame=0,scrollTarget;document.addEventListener('scroll',event=>{const target=event.target;if(target!==document&&!['main','page-content'].includes(target.id))return;scrollTarget=target;if(frame)return;frame=requestAnimationFrame(()=>{frame=0;document.documentElement.classList.toggle('asc-content-scrolled',(scrollTarget===document?window.scrollY:scrollTarget.scrollTop)>6);});},{capture:true,passive:true});})();
     ScreenLock.init();
     if (!ASCEND_TEST_MODE || !ASCEND_TEST_CONFIG.skipBootstrap) window.addEventListener('DOMContentLoaded', bootstrap);
     window.addEventListener('beforeunload', () => { if (State.db) DB.persist(State.db); });
