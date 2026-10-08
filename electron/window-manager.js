@@ -83,14 +83,27 @@ class WindowManager {
         sandbox: true,
         webSecurity: true,
         spellcheck: false,
+        zoomFactor: 1,
       },
     });
 
     this.window = win;
     savedState.manage(win);
 
+    // Chromium persists per-origin zoom (including file URLs). Always start at
+    // 100%, without deleting the profile or overriding Windows display scaling.
+    const resetZoom = () => { if (!win.isDestroyed()) win.webContents.setZoomFactor(1); };
+    win.webContents.on('dom-ready', resetZoom);
+    win.webContents.on('did-finish-load', resetZoom);
+    win.webContents.on('before-input-event', (event, input) => {
+      if (input.type === 'keyDown' && (input.control || input.meta) && input.key === '0') {
+        event.preventDefault();
+        resetZoom();
+      }
+    });
+
     win.once('ready-to-show', () => {
-      if (!win.isDestroyed()) win.show();
+      if (!win.isDestroyed()) { resetZoom(); win.show(); }
     });
 
     win.on('maximize', () => this.sendWindowState('window-maximized', true));
