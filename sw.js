@@ -1,5 +1,5 @@
 /* ASCEND caches public app files only. Never cache Auth, API responses or media. */
-const CACHE='ascend-mobile-de4e2bbece12';
+const CACHE='ascend-mobile-02c3d334a8d4';
 const base=new URL('./',self.location.href);
 const assets=['ascend-index.html','vendor/supabase-2.112.3.js','manifest.webmanifest','icons/icon-1024.png','icons/apple-touch-icon.png'].map(p=>new URL(p,base).href);
 self.addEventListener('install',event=>event.waitUntil((async()=>{const cache=await caches.open(CACHE);for(const url of assets){const response=await fetch(new Request(url,{cache:'reload',credentials:'omit'}));if(!response.ok)throw Error('Offline asset missing');await cache.put(url,response);}await self.skipWaiting();})()));

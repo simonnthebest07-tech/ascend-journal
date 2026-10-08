@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta http-equiv="Content-Security-Policy"
     content="default-src 'self'; base-uri 'self'; object-src 'none'; frame-src 'none'; script-src 'self' 'sha256-z1Kf6JgMvm8t0+OTDs+WNS7T09cSM7Z2Dk+Sf4m5S58=' 'sha256-ltapkBVGvYp5b94k3BYizOcuhapXOj0TfNXmNr/sXQc=' 'sha256-hil8n2fNzgwxtPaUWXB5QJ8MqIO89Muo8FJDLvGwMns=' 'sha256-NvX/lHvml7hRCV1GdacMZdlTyafhAazAnHvhBEx11fk=' 'sha256-5l8Qxuyreq/5+lA3Fjis6T5ZijY8PLFC6EVjQ3e1ePE=' 'sha256-n6R0IBuZMOkmzfmuei90rzSAgRYAtPeE0tm0hKnagco=' 'sha256-kb7ndaBEBHlPl/UqsECyYH9m05f3ZhHxBWTQvOnRF0I=' 'sha256-2LQArtL9NYFePnst7OznVE40AGcLWeHKYxa2G55UXXE='; script-src-elem 'self' 'sha256-z1Kf6JgMvm8t0+OTDs+WNS7T09cSM7Z2Dk+Sf4m5S58=' 'sha256-ltapkBVGvYp5b94k3BYizOcuhapXOj0TfNXmNr/sXQc=' 'sha256-hil8n2fNzgwxtPaUWXB5QJ8MqIO89Muo8FJDLvGwMns=' 'sha256-NvX/lHvml7hRCV1GdacMZdlTyafhAazAnHvhBEx11fk=' 'sha256-5l8Qxuyreq/5+lA3Fjis6T5ZijY8PLFC6EVjQ3e1ePE=' 'sha256-n6R0IBuZMOkmzfmuei90rzSAgRYAtPeE0tm0hKnagco=' 'sha256-kb7ndaBEBHlPl/UqsECyYH9m05f3ZhHxBWTQvOnRF0I=' 'sha256-2LQArtL9NYFePnst7OznVE40AGcLWeHKYxa2G55UXXE='; script-src-attr 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://api.fontshare.com https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com https://*.fontshare.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' https://stldczwjifswmaahfhjl.supabase.co wss://stldczwjifswmaahfhjl.supabase.co; worker-src 'self' blob:;">
   <meta name="referrer" content="strict-origin-when-cross-origin">
@@ -22019,6 +22019,8 @@ html[data-theme] body.ascend-electron.ascend-native-caption #ascend-titlebar{pad
 /* Mobile composition uses the Windows theme and existing component owners. */
 #asc-mobile-header{display:none}
 @media(max-width:759px){
+:root{--asc-mobile-bottom-space:max(12px,env(safe-area-inset-bottom,0px));--asc-mobile-dock-height:calc(70px + var(--asc-mobile-bottom-space))}
+@media(display-mode:standalone){:root{--asc-mobile-bottom-space:max(28px,env(safe-area-inset-bottom,0px))}}
 html[data-theme] body.ascend-2.ascend-spatial-v5 #topbar{height:auto!important;min-height:106px!important;flex-wrap:wrap!important;padding:calc(6px + env(safe-area-inset-top)) 18px 8px!important;background:var(--af-canvas)!important;position:sticky!important;top:0!important}
 html[data-theme] body.ascend-2.ascend-spatial-v5 #topbar>.topbar-leading,html[data-theme] body.ascend-2.ascend-spatial-v5 #topbar>.topbar-context,html[data-theme] body.ascend-2.ascend-spatial-v5 #topbar>.topbar-utilities{display:none!important}
 html[data-theme] body.ascend-2.ascend-spatial-v5 #topbar #tp-units,html[data-theme] body.ascend-2.ascend-spatial-v5 #topbar #top-context-trigger{display:none!important}
@@ -22032,12 +22034,12 @@ html[data-theme] body.ascend-2.ascend-spatial-v5 #asc-mobile-header{display:bloc
 #asc-mobile-header .asc-mobile-title-row>button{width:44px;justify-content:center}
 #asc-mobile-header .asc-mobile-title-row h1{flex:1;min-width:0}
 #asc-mobile-header .asc-mobile-title-row .asc-mobile-back{width:32px;min-width:32px;padding-left:0;justify-content:flex-start}
-html[data-theme] body.ascend-2.ascend-spatial-v5 #mobile-dock{grid-template-columns:repeat(5,minmax(0,1fr))!important;height:calc(70px + env(safe-area-inset-bottom))!important;padding:5px 8px calc(5px + env(safe-area-inset-bottom))!important;background:var(--af-canvas)!important}
+html[data-theme] body.ascend-2.ascend-spatial-v5 #mobile-dock{grid-template-columns:repeat(5,minmax(0,1fr))!important;height:var(--asc-mobile-dock-height)!important;padding:8px 8px var(--asc-mobile-bottom-space)!important;background:var(--af-canvas)!important}
 html[data-theme] body.ascend-2.ascend-spatial-v5 .dock-item{border-radius:12px!important;gap:5px!important;min-height:54px!important}
 html[data-theme] body.ascend-2.ascend-spatial-v5 .dock-label{font-size:10px!important;white-space:nowrap}
 html[data-theme] body.ascend-2.ascend-spatial-v5 .asc-mobile-new .dock-icon{height:38px;width:44px;border-radius:12px;background:var(--af-ink);color:var(--af-canvas)}
 html[data-theme] body.ascend-2.ascend-spatial-v5 #quick-add-btn{display:none!important}
-html[data-theme] body.ascend-2.ascend-spatial-v5 #page-content{padding:16px 16px calc(100px + env(safe-area-inset-bottom))!important;scroll-padding-bottom:100px}
+html[data-theme] body.ascend-2.ascend-spatial-v5 #page-content{padding:16px 16px calc(24px + var(--asc-mobile-dock-height))!important;scroll-padding-bottom:calc(24px + var(--asc-mobile-dock-height))}
 html[data-theme] body.ascend-2.ascend-spatial-v5 .tp-welcome h1{display:none!important}
 html[data-theme] body.ascend-2.ascend-spatial-v5 #page-content h1{display:none!important}
 html[data-theme] body.ascend-2.ascend-spatial-v5 .tp-welcome{flex-direction:row!important;align-items:center!important;flex-wrap:wrap!important;gap:8px!important}
@@ -22053,8 +22055,8 @@ html[data-theme] body.ascend-2.ascend-spatial-v5 .tp-card .btn,html[data-theme] 
 html[data-theme] body.ascend-2.ascend-spatial-v5 .asc-p3-ledger-viewport{overscroll-behavior:contain;touch-action:pan-y}
 html[data-theme] body.ascend-2.ascend-spatial-v5 .asc-p3-ledger-viewport{min-height:360px!important;max-height:65dvh!important}
 html[data-theme] body.ascend-2.ascend-spatial-v5 .asc-production-detail-panel{max-height:calc(100dvh - env(safe-area-inset-top))!important;padding-bottom:env(safe-area-inset-bottom)!important}
-html[data-theme] body.ascend-2.ascend-spatial-v5 .am-pane{padding-bottom:max(16px,env(safe-area-inset-bottom))!important}
-html[data-theme] body.ascend-2.ascend-spatial-v5 #toast-wrap{bottom:calc(82px + env(safe-area-inset-bottom))!important}
+html[data-theme] body.ascend-2.ascend-spatial-v5 .am-panel{padding-bottom:max(16px,env(safe-area-inset-bottom))!important}
+html[data-theme] body.ascend-2.ascend-spatial-v5 #toast-wrap{bottom:calc(12px + var(--asc-mobile-dock-height))!important}
 }
 
 </style>
